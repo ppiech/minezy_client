@@ -77,15 +77,15 @@ public class ContactsActivityPresenter {
         return false;
     }
 
-    public void onContactsItemUpdate(ContactsItemController item, Contact contact) {
-        item.setName(contact.getName());
+    public void onContactsItemUpdate(ContactsItemController item) {
+        item.setName(item.getContact().getName());
         item.setImageDrawable(TextDrawable.builder()
-            .buildRound(getContactInitials(contact), ColorGenerator.MATERIAL.getRandomColor()));
+            .buildRound(getContactInitials(item.getContact()), ColorGenerator.MATERIAL.getRandomColor()));
     }
 
-    public void onContactsItemSelected(ContactsItemController item, Contact contact) {
+    public void onContactsItemSelected(ContactsItemController item) {
         Intent intent = new Intent(mController.getContext(), EmailsActivity.class);
-        intent.putExtra(EmailsActivity.ARG_CONTACT, contact.getEmail());
+        intent.putExtra(EmailsActivity.ARG_CONTACT, item.getContact().getEmail());
         mController.startActivity(intent);
     }
 

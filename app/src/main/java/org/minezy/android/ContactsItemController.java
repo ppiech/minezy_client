@@ -8,9 +8,22 @@ import android.widget.TextView;
 public class ContactsItemController {
 
     private final View mItemView;
+    private final Contact mContact;
+    private final int mPosition;
 
-    public ContactsItemController(View itemView) {
+    public ContactsItemController(View itemView, Contact contact, int position) {
+
         mItemView = itemView;
+        mContact = contact;
+        mPosition = position;
+    }
+
+    public Contact getContact() {
+        return mContact;
+    }
+
+    public int getPosition() {
+        return mPosition;
     }
 
     public void setName(String name) {

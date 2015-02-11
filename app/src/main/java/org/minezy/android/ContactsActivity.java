@@ -42,7 +42,7 @@ public class ContactsActivity extends ActionBarActivity implements ContactsActiv
         getContactListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                mPresenter.onContactsItemSelected(new ContactsItemController(view), mCotactsAdapter.getItem(i));
+                mPresenter.onContactsItemSelected(new ContactsItemController(view, mCotactsAdapter.getItem(i), i));
             }
         });
 
@@ -117,7 +117,7 @@ public class ContactsActivity extends ActionBarActivity implements ContactsActiv
                 convertView = mInflater.inflate(R.layout.contacts_item, parent, false);
             }
 
-            mPresenter.onContactsItemUpdate(new ContactsItemController(convertView), getItem(position));
+            mPresenter.onContactsItemUpdate(new ContactsItemController(convertView, getItem(position), position));
             return convertView;
         }
     }
