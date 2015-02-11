@@ -1,0 +1,139 @@
+{
+  "contacts": {
+    "_count": 20, 
+    "_params": {
+      "account": null, 
+      "bcc": [], 
+      "cc": [], 
+      "count": [
+        "SENT", 
+        "CC", 
+        "BCC", 
+        "TO"
+      ], 
+      "day": 0, 
+      "end": 0, 
+      "from": [], 
+      "id": "", 
+      "index": 0, 
+      "keyword": "", 
+      "left": [], 
+      "limit": 20, 
+      "month": 0, 
+      "name": null, 
+      "observer": [], 
+      "order": "DESC", 
+      "page": 1, 
+      "rel": "ANY", 
+      "right": [], 
+      "start": 0, 
+      "to": [], 
+      "year": 0, 
+      "ymd": []
+    }, 
+    "_query": "MATCH (n:`100`:Contact) WITH n,n.sent+n.to+n.cc+n.bcc AS count WHERE count > 0 RETURN COALESCE(n.name,n.email) as name,n.email,count ORDER BY count DESC, name ASC LIMIT {limit}", 
+    "_query_time": 5.302954196929932, 
+    "contact": [
+      {
+        "count": 36616, 
+        "email": "pete.davis@enron.com", 
+        "name": "Pete Davis"
+      }, 
+      {
+        "count": 33782, 
+        "email": "vince.kaminski@enron.com", 
+        "name": "Vince J Kaminski"
+      }, 
+      {
+        "count": 31562, 
+        "email": "jeff.dasovich@enron.com", 
+        "name": "Jeff Dasovich"
+      }, 
+      {
+        "count": 26548, 
+        "email": "kay.mann@enron.com", 
+        "name": "Kay Mann"
+      }, 
+      {
+        "count": 26352, 
+        "email": "steven.kean@enron.com", 
+        "name": "Steven J Kean"
+      }, 
+      {
+        "count": 26176, 
+        "email": "tana.jones@enron.com", 
+        "name": "Tana Jones"
+      }, 
+      {
+        "count": 25606, 
+        "email": "sara.shackleton@enron.com", 
+        "name": "Sara Shackleton"
+      }, 
+      {
+        "count": 24569, 
+        "email": "richard.shapiro@enron.com", 
+        "name": "Richard Shapiro"
+      }, 
+      {
+        "count": 21742, 
+        "email": "mark.guzman@enron.com", 
+        "name": "Mark Guzman"
+      }, 
+      {
+        "count": 20397, 
+        "email": "mark.taylor@enron.com", 
+        "name": "Mark Taylor"
+      }, 
+      {
+        "count": 19541, 
+        "email": "geir.solberg@enron.com", 
+        "name": "Geir Solberg"
+      }, 
+      {
+        "count": 19398, 
+        "email": "ryan.slinger@enron.com", 
+        "name": "Ryan Slinger"
+      }, 
+      {
+        "count": 17226, 
+        "email": "james.steffes@enron.com", 
+        "name": "James D Steffes"
+      }, 
+      {
+        "count": 17150, 
+        "email": "craig.dean@enron.com", 
+        "name": "Craig Dean"
+      }, 
+      {
+        "count": 15235, 
+        "email": "sally.beck@enron.com", 
+        "name": "Sally Beck"
+      }, 
+      {
+        "count": 15113, 
+        "email": "chris.germany@enron.com", 
+        "name": "Chris Germany"
+      }, 
+      {
+        "count": 13464, 
+        "email": "susan.mara@enron.com", 
+        "name": "Susan J Mara"
+      }, 
+      {
+        "count": 12994, 
+        "email": "monika.causholli@enron.com", 
+        "name": "Monika Causholli"
+      }, 
+      {
+        "count": 12949, 
+        "email": "gerald.nemec@enron.com", 
+        "name": "Gerald Nemec"
+      }, 
+      {
+        "count": 12819, 
+        "email": "leaf.harasin@enron.com", 
+        "name": "Leaf Harasin"
+      }
+    ]
+  }
+}

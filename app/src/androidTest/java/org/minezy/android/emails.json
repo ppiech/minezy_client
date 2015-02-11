@@ -1,0 +1,283 @@
+{
+  "emails": {
+    "_count": 20, 
+    "_params": {
+      "account": null, 
+      "bcc": [], 
+      "cc": [], 
+      "count": [
+        "SENT", 
+        "CC", 
+        "BCC", 
+        "TO"
+      ], 
+      "day": 0, 
+      "end": 0, 
+      "from": [], 
+      "id": "", 
+      "index": 0, 
+      "keyword": "", 
+      "left": [
+        "klay@enron.com"
+      ], 
+      "limit": 20, 
+      "month": 0, 
+      "name": null, 
+      "observer": [], 
+      "order": "ASC", 
+      "page": 1, 
+      "rel": "ANY", 
+      "right": [
+        "savont@email.msn.com"
+      ], 
+      "start": 0, 
+      "to": [], 
+      "year": 0, 
+      "ymd": []
+    }, 
+    "_query": "MATCH (cL:`100`:Contact)-[rL:SENT|TO|CC|BCC]-(e:`100`:Email)-[rR:SENT|TO|CC|BCC]-(cR:`100`:Contact) WHERE cL.email IN {left} AND cR.email IN {right} AND (type(rL)='SENT' OR type(rR)='SENT') RETURN distinct(e) ORDER BY e.timestamp ASC LIMIT {limit}", 
+    "_query_time": 0.230194091796875, 
+    "email": [
+      {
+        "_ord": 1, 
+        "date": {
+          "date": "Wed, 13 Sep 2000 14:42:00 -0700 (PDT)", 
+          "day": 13, 
+          "month": 9, 
+          "utc": 968881320, 
+          "year": 2000
+        }, 
+        "id": "5964974.1075840259917.JavaMail.evans@thyme", 
+        "subject": "Talking points from Dave Walden"
+      }, 
+      {
+        "_ord": 2, 
+        "date": {
+          "date": "Wed, 13 Sep 2000 14:42:00 -0700 (PDT)", 
+          "day": 13, 
+          "month": 9, 
+          "utc": 968881320, 
+          "year": 2000
+        }, 
+        "id": "13123665.1075840236503.JavaMail.evans@thyme", 
+        "subject": "Talking points from Dave Walden"
+      }, 
+      {
+        "_ord": 3, 
+        "date": {
+          "date": "Wed, 13 Sep 2000 14:42:00 -0700 (PDT)", 
+          "day": 13, 
+          "month": 9, 
+          "utc": 968881320, 
+          "year": 2000
+        }, 
+        "id": "32558075.1075840209050.JavaMail.evans@thyme", 
+        "subject": "Talking points from Dave Walden"
+      }, 
+      {
+        "_ord": 4, 
+        "date": {
+          "date": "Mon, 18 Sep 2000 05:53:00 -0700 (PDT)", 
+          "day": 18, 
+          "month": 9, 
+          "utc": 969281580, 
+          "year": 2000
+        }, 
+        "id": "11140502.1075840260416.JavaMail.evans@thyme", 
+        "subject": "Message from D. Walden re: Chronicle"
+      }, 
+      {
+        "_ord": 5, 
+        "date": {
+          "date": "Mon, 18 Sep 2000 05:53:00 -0700 (PDT)", 
+          "day": 18, 
+          "month": 9, 
+          "utc": 969281580, 
+          "year": 2000
+        }, 
+        "id": "3632323.1075840236954.JavaMail.evans@thyme", 
+        "subject": "Message from D. Walden re: Chronicle"
+      }, 
+      {
+        "_ord": 6, 
+        "date": {
+          "date": "Mon, 18 Sep 2000 05:53:00 -0700 (PDT)", 
+          "day": 18, 
+          "month": 9, 
+          "utc": 969281580, 
+          "year": 2000
+        }, 
+        "id": "11671509.1075840209572.JavaMail.evans@thyme", 
+        "subject": "Message from D. Walden re: Chronicle"
+      }, 
+      {
+        "_ord": 7, 
+        "date": {
+          "date": "Tue, 19 Sep 2000 04:24:00 -0700 (PDT)", 
+          "day": 19, 
+          "month": 9, 
+          "utc": 969362640, 
+          "year": 2000
+        }, 
+        "id": "29315117.1075840260463.JavaMail.evans@thyme", 
+        "subject": "Fw: Chron ed board"
+      }, 
+      {
+        "_ord": 8, 
+        "date": {
+          "date": "Tue, 19 Sep 2000 04:24:00 -0700 (PDT)", 
+          "day": 19, 
+          "month": 9, 
+          "utc": 969362640, 
+          "year": 2000
+        }, 
+        "id": "26990772.1075840209640.JavaMail.evans@thyme", 
+        "subject": "Fw: Chron ed board"
+      }, 
+      {
+        "_ord": 9, 
+        "date": {
+          "date": "Tue, 19 Sep 2000 04:24:00 -0700 (PDT)", 
+          "day": 19, 
+          "month": 9, 
+          "utc": 969362640, 
+          "year": 2000
+        }, 
+        "id": "25750482.1075840237002.JavaMail.evans@thyme", 
+        "subject": "Fw: Chron ed board"
+      }, 
+      {
+        "_ord": 10, 
+        "date": {
+          "date": "Tue, 3 Oct 2000 09:09:00 -0700 (PDT)", 
+          "day": 3, 
+          "month": 10, 
+          "utc": 970589340, 
+          "year": 2000
+        }, 
+        "id": "6392584.1075840262650.JavaMail.evans@thyme", 
+        "subject": "Arena info for minorities"
+      }, 
+      {
+        "_ord": 11, 
+        "date": {
+          "date": "Tue, 3 Oct 2000 09:09:00 -0700 (PDT)", 
+          "day": 3, 
+          "month": 10, 
+          "utc": 970589340, 
+          "year": 2000
+        }, 
+        "id": "25071924.1075840212167.JavaMail.evans@thyme", 
+        "subject": "Arena info for minorities"
+      }, 
+      {
+        "_ord": 12, 
+        "date": {
+          "date": "Tue, 3 Oct 2000 09:09:00 -0700 (PDT)", 
+          "day": 3, 
+          "month": 10, 
+          "utc": 970589340, 
+          "year": 2000
+        }, 
+        "id": "27942811.1075840239280.JavaMail.evans@thyme", 
+        "subject": "Arena info for minorities"
+      }, 
+      {
+        "_ord": 13, 
+        "date": {
+          "date": "Wed, 4 Oct 2000 06:53:00 -0700 (PDT)", 
+          "day": 4, 
+          "month": 10, 
+          "utc": 970667580, 
+          "year": 2000
+        }, 
+        "id": "31877314.1075840262964.JavaMail.evans@thyme", 
+        "subject": "Bill Archer & Arena spot"
+      }, 
+      {
+        "_ord": 14, 
+        "date": {
+          "date": "Wed, 4 Oct 2000 06:53:00 -0700 (PDT)", 
+          "day": 4, 
+          "month": 10, 
+          "utc": 970667580, 
+          "year": 2000
+        }, 
+        "id": "26400982.1075840239650.JavaMail.evans@thyme", 
+        "subject": "Bill Archer & Arena spot"
+      }, 
+      {
+        "_ord": 15, 
+        "date": {
+          "date": "Wed, 4 Oct 2000 06:53:00 -0700 (PDT)", 
+          "day": 4, 
+          "month": 10, 
+          "utc": 970667580, 
+          "year": 2000
+        }, 
+        "id": "17925607.1075840212482.JavaMail.evans@thyme", 
+        "subject": "Bill Archer & Arena spot"
+      }, 
+      {
+        "_ord": 16, 
+        "date": {
+          "date": "Sat, 7 Oct 2000 10:44:00 -0700 (PDT)", 
+          "day": 7, 
+          "month": 10, 
+          "utc": 970940640, 
+          "year": 2000
+        }, 
+        "id": "27282470.1075840264285.JavaMail.evans@thyme", 
+        "subject": "Arena and Bill Archer"
+      }, 
+      {
+        "_ord": 17, 
+        "date": {
+          "date": "Sat, 7 Oct 2000 10:44:00 -0700 (PDT)", 
+          "day": 7, 
+          "month": 10, 
+          "utc": 970940640, 
+          "year": 2000
+        }, 
+        "id": "26275752.1075840240903.JavaMail.evans@thyme", 
+        "subject": "Arena and Bill Archer"
+      }, 
+      {
+        "_ord": 18, 
+        "date": {
+          "date": "Sat, 7 Oct 2000 10:44:00 -0700 (PDT)", 
+          "day": 7, 
+          "month": 10, 
+          "utc": 970940640, 
+          "year": 2000
+        }, 
+        "id": "16145637.1075840213809.JavaMail.evans@thyme", 
+        "subject": "Arena and Bill Archer"
+      }, 
+      {
+        "_ord": 19, 
+        "date": {
+          "date": "Tue, 10 Oct 2000 06:08:00 -0700 (PDT)", 
+          "day": 10, 
+          "month": 10, 
+          "utc": 971183280, 
+          "year": 2000
+        }, 
+        "id": "25835333.1075840265007.JavaMail.evans@thyme", 
+        "subject": "Chron Ed board meeting points"
+      }, 
+      {
+        "_ord": 20, 
+        "date": {
+          "date": "Tue, 10 Oct 2000 06:08:00 -0700 (PDT)", 
+          "day": 10, 
+          "month": 10, 
+          "utc": 971183280, 
+          "year": 2000
+        }, 
+        "id": "25903771.1075840214528.JavaMail.evans@thyme", 
+        "subject": "Chron Ed board meeting points"
+      }
+    ]
+  }
+}

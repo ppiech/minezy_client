@@ -1,0 +1,9 @@
+<resources>
+    <string name="title_activity_settings">Settings</string>
+
+    <!-- Strings related to Settings -->
+    <string name="pref_header_general">General</string>
+    <string name="pref_title_server_address">Server Address</string>
+    <string name="pref_title_account_email">Account Email</string>
+
+</resources>

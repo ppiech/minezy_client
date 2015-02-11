@@ -1,0 +1,22 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <EditTextPreference
+        android:key="@string/pref_account_email"
+        android:title="@string/pref_title_account_email"
+        android:defaultValue="@string/pref_default_account_email"
+        android:selectAllOnFocus="true"
+        android:inputType="textEmailAddress"
+        android:singleLine="true"
+        android:maxLines="1"/>
+
+    <EditTextPreference
+        android:key="@string/pref_server_address"
+        android:title="@string/pref_title_server_address"
+        android:defaultValue="@string/pref_default_server_address"
+        android:selectAllOnFocus="true"
+        android:inputType="textCapWords"
+        android:capitalize="none"
+        android:singleLine="true"
+        android:maxLines="1"/>
+
+</PreferenceScreen>
