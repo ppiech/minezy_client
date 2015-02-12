@@ -88,6 +88,7 @@ public class ContactsActivity extends ActionBarActivity implements ContactsActiv
 
     @Override
     protected void onDestroy() {
+        super.onDestroy();
         mPresenter.onDestroy();
         mPresenter = null;
     }
