@@ -16,7 +16,7 @@
         android:padding="15dp"
         android:layout_toRightOf="@id/toContactImageView"
         android:id="@+id/messageContainerView"
-        android:background="@drawable/abc_menu_dropdown_panel_holo_light">
+        android:background="@drawable/white_panel_holo_light">
 
         <TextView
             android:layout_width="wrap_content"
