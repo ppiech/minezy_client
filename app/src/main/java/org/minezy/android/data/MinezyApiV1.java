@@ -1,10 +1,12 @@
-package org.minezy.android;
+package org.minezy.android.data;
 
 import android.content.Context;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.minezy.android.model.Contact;
+import org.minezy.android.model.Email;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;

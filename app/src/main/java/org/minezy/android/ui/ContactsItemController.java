@@ -1,24 +1,28 @@
-package org.minezy.android;
+package org.minezy.android.ui;
 
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public class EmailsItemController {
+import org.minezy.android.R;
+import org.minezy.android.model.Contact;
+
+public class ContactsItemController {
 
     private final View mItemView;
-    private final Email mEmail;
+    private final Contact mContact;
     private final int mPosition;
 
-    public EmailsItemController(View itemView, Email email, int position) {
+    public ContactsItemController(View itemView, Contact contact, int position) {
+
         mItemView = itemView;
-        mEmail = email;
+        mContact = contact;
         mPosition = position;
     }
 
-    public Email getEmail() {
-        return mEmail;
+    public Contact getContact() {
+        return mContact;
     }
 
     public int getPosition() {
@@ -26,7 +30,7 @@ public class EmailsItemController {
     }
 
     public void setName(String name) {
-        TextView textView = (TextView) mItemView.findViewById(R.id.messageTextView);
+        TextView textView = (TextView) mItemView.findViewById(R.id.nameTextView);
         textView.setText(name);
     }
 

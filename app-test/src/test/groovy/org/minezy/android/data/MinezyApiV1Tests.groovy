@@ -1,6 +1,8 @@
-package org.minezy.android
+package org.minezy.android.data
 
 import android.content.Context
+import org.minezy.android.model.Contact
+import org.minezy.android.model.Email
 import pl.polidea.robospock.RoboSpecification
 
 class MinezyV1ApiSpecification extends RoboSpecification {

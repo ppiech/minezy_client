@@ -1,7 +1,9 @@
-package org.minezy.android
+package org.minezy.android.ui
 
 import android.content.Context
 import android.content.SharedPreferences
+import org.minezy.android.data.MinezyApiV1
+import org.minezy.android.model.Contact
 import org.minezy.android.utils.AsyncTaskUtil
 import pl.polidea.robospock.RoboSpecification
 

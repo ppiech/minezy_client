@@ -1,4 +1,4 @@
-package org.minezy.android;
+package org.minezy.android.model;
 
 public class Contact {
     private final String mEmail;

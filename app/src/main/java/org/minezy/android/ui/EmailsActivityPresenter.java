@@ -1,8 +1,12 @@
-package org.minezy.android;
+package org.minezy.android.ui;
 
 import android.content.Intent;
 import android.preference.PreferenceManager;
 
+import org.minezy.android.R;
+import org.minezy.android.data.MinezyApiV1;
+import org.minezy.android.data.MinezyConnection;
+import org.minezy.android.model.Email;
 import org.minezy.android.utils.AsyncTaskUtil;
 
 import java.util.Arrays;

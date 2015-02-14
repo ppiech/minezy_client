@@ -1,7 +1,9 @@
-package org.minezy.android;
+package org.minezy.android.data;
 
 import android.content.Context;
 import android.preference.PreferenceManager;
+
+import org.minezy.android.R;
 
 import java.io.BufferedReader;
 import java.io.IOException;

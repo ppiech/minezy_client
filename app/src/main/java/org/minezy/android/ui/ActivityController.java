@@ -1,4 +1,4 @@
-package org.minezy.android;
+package org.minezy.android.ui;
 
 import android.content.Context;
 import android.content.Intent;

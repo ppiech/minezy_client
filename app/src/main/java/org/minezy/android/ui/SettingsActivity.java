@@ -1,4 +1,4 @@
-package org.minezy.android;
+package org.minezy.android.ui;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -10,6 +10,8 @@ import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
+
+import org.minezy.android.R;
 
 import java.util.List;
 

@@ -1,4 +1,6 @@
-package org.minezy.android;
+package org.minezy.android.ui;
+
+import org.minezy.android.model.Contact;
 
 import java.util.List;
 

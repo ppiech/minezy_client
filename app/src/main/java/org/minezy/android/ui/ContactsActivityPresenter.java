@@ -1,4 +1,4 @@
-package org.minezy.android;
+package org.minezy.android.ui;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -7,6 +7,10 @@ import android.preference.PreferenceManager;
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
 
+import org.minezy.android.R;
+import org.minezy.android.data.MinezyApiV1;
+import org.minezy.android.data.MinezyConnection;
+import org.minezy.android.model.Contact;
 import org.minezy.android.utils.AsyncTaskUtil;
 
 import java.util.Arrays;

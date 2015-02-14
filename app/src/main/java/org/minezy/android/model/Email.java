@@ -1,4 +1,4 @@
-package org.minezy.android;
+package org.minezy.android.model;
 
 import java.util.Date;
 

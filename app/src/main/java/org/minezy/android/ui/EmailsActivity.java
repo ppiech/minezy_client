@@ -1,4 +1,4 @@
-package org.minezy.android;
+package org.minezy.android.ui;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -8,6 +8,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+
+import org.minezy.android.R;
+import org.minezy.android.model.Email;
 
 import java.util.List;
 
