@@ -52,9 +52,9 @@ public class EmailsActivityPresenter {
     public void onCreate() {
         if (mIntent != null) {
             mAsyncTaskUtil.execute(
-                new AsyncTaskUtil.Executable<List<Email>>() {
+                new AsyncTaskUtil.Executable<String, Void, List<Email>>() {
                     @Override
-                    public List<Email> doInBackground() {
+                    public List<Email> doInBackground(String... contacts) {
                         try {
                             return mMinezyApiV1
                                 .getEmailsWithLeftAndRight(getContactForUserAccount(), getToContactEmail());

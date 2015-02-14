@@ -7,36 +7,67 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+@SuppressWarnings("unchecked")
 public class AsyncTaskUtil {
 
-    public static abstract class Executable<V> {
-        abstract public V doInBackground();
+    public interface ProgressTracker<Progress> {
+        public void publishProgress(Progress... progress);
+    }
 
-        public void onPreExecute() {
+    public static abstract class Executable<Params, Progress, Result> {
+
+        abstract public Result doInBackground(Params... params);
+
+        public Result doInBackground(ProgressTracker<Progress> progressTracker, Params... params) {
+            return doInBackground(params);
         }
 
-        public void onPostExecute(V result) {
+        public void onPreExecute() {
+            // Do nothing by default
+        }
+
+        public void onPostExecute(Result result) {
+            // Do nothing by default
         }
 
         public void onCancelled() {
+            // Do nothing by default
         }
+
+        protected void onProgressUpdate(Progress... values) {
+            // Do nothing by default
+        }
+
     }
 
-    public <V> Future<V> execute(final Executable<V> executable) {
-        final AsyncTask<Void, Void, V> task = new AsyncTask<Void, Void, V>() {
-
+    public <Params, Progress, Result> Future<Result> execute(final Executable<Params, Progress, Result> executable,
+                                                             Params... params) {
+        final AsyncTask<Params, Progress, Result> task = new AsyncTask<Params, Progress, Result>() {
             @Override
             protected void onPreExecute() {
                 executable.onPreExecute();
             }
 
             @Override
-            protected V doInBackground(Void... params) {
-                return executable.doInBackground();
+            protected Result doInBackground(Params... params) {
+                return executable.doInBackground(
+                    new ProgressTracker<Progress>() {
+                        @Override
+                        @SuppressWarnings("unchecked")
+                        public void publishProgress(Progress... progress) {
+                            publishProgressToTask(progress);
+                        }
+                    },
+                    params);
             }
 
+            private void publishProgressToTask(Progress... progress) {
+                publishProgress(progress);
+            }
+
+
             @Override
-            protected void onPostExecute(V v) {
+            protected void onPostExecute(Result v) {
                 executable.onPostExecute(v);
             }
 
@@ -44,11 +75,16 @@ public class AsyncTaskUtil {
             protected void onCancelled() {
                 executable.onCancelled();
             }
+
+            @Override
+            protected void onProgressUpdate(Progress... values) {
+                executable.onProgressUpdate(values);
+            }
         };
 
-        task.execute();
+        task.execute(params);
 
-        return new Future<V>() {
+        return new Future<Result>() {
             @Override
             public boolean cancel(boolean mayInterruptIfRunning) {
                 return task.cancel(mayInterruptIfRunning);
@@ -65,12 +101,12 @@ public class AsyncTaskUtil {
             }
 
             @Override
-            public V get() throws InterruptedException, ExecutionException {
+            public Result get() throws InterruptedException, ExecutionException {
                 return task.get();
             }
 
             @Override
-            public V get(long timeout, TimeUnit unit)
+            public Result get(long timeout, TimeUnit unit)
                 throws InterruptedException, ExecutionException, TimeoutException {
                 return task.get(timeout, unit);
             }

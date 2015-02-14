@@ -1,11 +1,13 @@
 package org.minezy.android;
 
 import android.content.Intent;
-import android.os.AsyncTask;
+import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
+
+import org.minezy.android.utils.AsyncTaskUtil;
 
 import java.util.Arrays;
 import java.util.List;
@@ -18,21 +20,28 @@ public class ContactsActivityPresenter {
     private static final List<Contact> INVALID_CONTACTS_LIST =
         Arrays.asList(new Contact[]{new Contact("<invalid>", "<invalid>")});
 
+    private final AsyncTaskUtil mAsyncTaskUtil;
+    private final MinezyApiV1 mMinezyApiV1;
+    private final SharedPreferences mSharedPreferences;
+
     private final ContactsActivityController mController;
 
     public ContactsActivityPresenter(ContactsActivityController controller) {
-        mController = controller;
+        this(controller, new AsyncTaskUtil(), new MinezyApiV1(controller.getContext()),
+            PreferenceManager.getDefaultSharedPreferences(controller.getContext()));
     }
 
-    private class RetrieveContactsTask extends AsyncTask<String, Void, List<Contact>> {
-        private final MinezyApiV1 mMinezyApiV1;
+    public ContactsActivityPresenter(ContactsActivityController controller, AsyncTaskUtil asyncTaskUtil,
+                                     MinezyApiV1 minezyApiV1, SharedPreferences sharedPreferences) {
+        mController = controller;
+        mAsyncTaskUtil = asyncTaskUtil;
+        mMinezyApiV1 = minezyApiV1;
+        mSharedPreferences = sharedPreferences;
+    }
 
-        public RetrieveContactsTask(MinezyApiV1 minezyApiV1) {
-            mMinezyApiV1 = minezyApiV1;
-        }
-
+    private class RetrieveContactsTask extends AsyncTaskUtil.Executable<String, Void, List<Contact>> {
         @Override
-        protected List<Contact> doInBackground(String... left) {
+        public List<Contact> doInBackground(String... left) {
             try {
                 return mMinezyApiV1.getContactsWithLeft(left[0]);
             } catch (MinezyApiV1.MinezyApiException | MinezyConnection.MinezyConnectionException e) {
@@ -42,7 +51,7 @@ public class ContactsActivityPresenter {
         }
 
         @Override
-        protected void onPostExecute(List<Contact> contacts) {
+        public void onPostExecute(List<Contact> contacts) {
             super.onPostExecute(contacts);
             if (contacts.size() > 0) {
                 mController.setContacts(contacts);
@@ -55,14 +64,13 @@ public class ContactsActivityPresenter {
     }
 
     private String getContactForUserAccount() {
-        return PreferenceManager.getDefaultSharedPreferences(mController.getContext()).
-            getString(getString(R.string.pref_account_email),
-                getString(R.string.pref_default_account_email));
+        return mSharedPreferences.getString(getString(R.string.pref_account_email),
+            getString(R.string.pref_default_account_email));
     }
 
 
     public void onCreate() {
-        new RetrieveContactsTask(new MinezyApiV1(mController.getContext())).execute(getContactForUserAccount());
+        mAsyncTaskUtil.execute(new RetrieveContactsTask(), getContactForUserAccount());
     }
 
     public void onDestroy() {
