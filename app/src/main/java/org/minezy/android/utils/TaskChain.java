@@ -39,10 +39,10 @@ public class TaskChain<V> extends FutureTask<V> {
 
     private final Executor mMain;
     private final Executor mBackground;
-    private final TaskChain<?> mPrevious;
 
     private volatile Executor mNextExecutor;
     private volatile TaskChain<V> mNext;
+    private volatile V mParam;
     private volatile Throwable mError;
 
     static final Object STUB_RETURN_VALUE = new Object();
@@ -57,30 +57,28 @@ public class TaskChain<V> extends FutureTask<V> {
         super((Callable<V>) CALLABLE_NO_OP);
         mMain = main;
         mBackground = background;
-        mPrevious = null;
     }
 
-    private TaskChain(TaskChain<?> previous, Runnable runnable) {
+    private TaskChain(Runnable runnable) {
         super(runnable, (V) STUB_RETURN_VALUE);
         mMain = null;
         mBackground = null;
-        mPrevious = previous;
     }
 
-    private TaskChain(TaskChain<?> previous, Callable<V> callable) {
+    private TaskChain(Callable<V> callable) {
         super(callable);
         mMain = null;
         mBackground = null;
-        mPrevious = previous;
     }
 
-    public void execute() {
+    public TaskChain<V> execute() {
         // This method can be called only on the first executor in the chain.
         if (mNext != null) {
             mNextExecutor.execute(mNext);
         } else {
             throw new IllegalStateException("There are no tasks to execute in the chain.");
         }
+        return this;
     }
 
     public TaskChain<V> main(Runnable runnable) {
@@ -91,6 +89,10 @@ public class TaskChain<V> extends FutureTask<V> {
         return chain(mMain, callable);
     }
 
+    public <R> TaskChain main(Parametrized<V, R> parametrized) {
+        return chain(mMain, parametrized);
+    }
+
     public TaskChain<V> background(Runnable runnable) {
         return chain(mBackground, runnable);
     }
@@ -99,12 +101,16 @@ public class TaskChain<V> extends FutureTask<V> {
         return chain(mBackground, callable);
     }
 
+    public <R> TaskChain background(Parametrized<V, R> parametrized) {
+        return chain(mBackground, parametrized);
+    }
+
     public TaskChain<V> chain(Executor executor, Runnable runnable) {
         if (mNext != null) {
             mNext.chain(executor, runnable);
         } else {
             mNextExecutor = executor;
-            mNext = new TaskChain<>(this, runnable);
+            mNext = new TaskChain<>(runnable);
         }
         return this;
     }
@@ -114,9 +120,45 @@ public class TaskChain<V> extends FutureTask<V> {
             mNext.chain(executor, callable);
         } else {
             mNextExecutor = executor;
-            mNext = (TaskChain<V>) new TaskChain<>(this, callable);
+            mNext = (TaskChain<V>) new TaskChain<>(callable);
         }
         return this;
+    }
+
+    private class ParametrizedWrapper<R> implements Callable<R> {
+        private final Parametrized<V, R> mParametrized;
+
+        ParametrizedWrapper(Parametrized<V, R> parametrized) {
+            mParametrized = parametrized;
+        }
+
+        @Override
+        public R call() throws Exception {
+            V param;
+            if (mParam != null) {
+                param = mParam;
+            } else {
+                param = TaskChain.super.get();
+            }
+
+            return mParametrized.perform(param);
+        }
+    }
+
+    public <R> TaskChain chain(Executor executor, Parametrized<V, R> parametrized) {
+        if (mNext != null) {
+            mNext.chain(executor, parametrized);
+        } else {
+            mNextExecutor = executor;
+            mNext = (TaskChain<V>) new TaskChain<R>(new ParametrizedWrapper<R>(parametrized));
+        }
+        return this;
+    }
+
+    public <P> TaskChain<P> param(P param) {
+        TaskChain<P> retVal = (TaskChain<P>) this;
+        retVal.mParam = param;
+        return retVal;
     }
 
     @Override
@@ -155,6 +197,10 @@ public class TaskChain<V> extends FutureTask<V> {
                 return retVal;
             }
         }
+
+        if (mParam != null) {
+            return mParam;
+        }
         return super.get();
     }
 
@@ -164,7 +210,15 @@ public class TaskChain<V> extends FutureTask<V> {
 
         if (mNext != null) {
             // TODO: calculate remaining wait time?
-            return mNext.get(timeout, unit);
+            V retVal = mNext.get(timeout, unit);
+            // Do not return value from next if it was a Runnable.
+            if (retVal != STUB_RETURN_VALUE) {
+                return retVal;
+            }
+        }
+
+        if (mParam != null) {
+            return mParam;
         }
 
         return super.get(timeout, unit);
@@ -175,21 +229,4 @@ public class TaskChain<V> extends FutureTask<V> {
         mError = t;
         super.setException(t);
     }
-
-    //    @Override
-//    protected void set(V v) {
-//        if (mPrevious != null) {
-//            ((TaskChain<V>) mPrevious).set(v);
-//        }
-//        super.set(v);
-//    }
-//
-//    @Override
-//    protected void setException(Throwable t) {
-//        if (mPrevious != null) {
-//            ((TaskChain<V>) mPrevious).setException(t);
-//        }
-//        super.setException(t);
-//    }
-
 }
