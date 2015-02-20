@@ -21,7 +21,7 @@ public class TaskChainFactory {
     }
 
     public TaskChain<Void> create() {
-        TaskChain<Void> chain = new TaskChain<Void>(mMain, mBackground);
+        TaskChainImpl<Void> chain = new TaskChainImpl<Void>(mMain, mBackground);
         ImmediateExecutor.INSTANCE.execute(chain);
         return chain;
     }
