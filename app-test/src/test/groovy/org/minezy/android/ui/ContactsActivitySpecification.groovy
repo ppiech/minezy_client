@@ -11,6 +11,11 @@ import pl.polidea.robospock.RoboSpecification
 
 class ContactsActivitySpecification extends RoboSpecification {
 
+    final List<Contact> contacts = [
+            new Contact("pete.davis@enron.com", "Pete Davis"),
+            new Contact("vince.kaminski@enron.com", "Vince J Kaminski"),
+            new Contact("jeff.dasovich@enron.com", "Jeff Dasovich")
+    ]
     def apiV1 = Mock(MinezyApiV1)
     def controller = Mock(ContactsActivityController)
     def context = Robolectric.application
@@ -18,6 +23,15 @@ class ContactsActivitySpecification extends RoboSpecification {
     def mainExecutor = new TestExecutor();
     def backgroundExecutor = new TestExecutor();
     def taskChainFactory = new TaskChainFactory(mainExecutor, backgroundExecutor);
+
+    def presenter
+
+    def setup() {
+        sharedPreferences.getString('account_email', _) >> "pete.davis@enron.com"
+        controller.getContext() >> context
+        presenter = new ContactsActivityPresenter(controller, taskChainFactory, apiV1, sharedPreferences)
+        apiV1.getContactsWithLeft('pete.davis@enron.com') >> contacts
+    }
 
     def "Robolectric.application context should return strings from resources"() {
         when:
@@ -28,31 +42,29 @@ class ContactsActivitySpecification extends RoboSpecification {
     }
 
 
-    def "onCreate() should retrieve contacts in background and set them to view controller"() {
-        given:
-        final List<Contact> contacts = [
-                new Contact("pete.davis@enron.com", "Pete Davis"),
-                new Contact("vince.kaminski@enron.com", "Vince J Kaminski"),
-                new Contact("jeff.dasovich@enron.com", "Jeff Dasovich")
-        ]
-
-        sharedPreferences.getString('account_email', _) >> "pete.davis@enron.com"
-        controller.getContext() >> context
-        def presenter = new ContactsActivityPresenter(controller, taskChainFactory, apiV1, sharedPreferences)
-
+    def "onCreate() retrieves contacts from apiV1 on background thread"() {
         when:
         presenter.onCreate()
 
         then:
-        apiV1.getContactsWithLeft('pete.davis@enron.com') >> {
-            assert TestExecutor.executing() == backgroundExecutor
-            return contacts
-        }
-        1 * controller.setContacts({
-            assert TestExecutor.executing() == mainExecutor
-            it == contacts
-        });
+        1 * apiV1.getContactsWithLeft({ TestExecutor.executing() == backgroundExecutor })
     }
 
+
+    def "onCreate() should set contacts to view controller"() {
+        when:
+        presenter.onCreate()
+
+        then:
+        1 * controller.setContacts(contacts);
+    }
+
+    def "onCreate() calls view controller on main thread"() {
+        when:
+        presenter.onCreate()
+
+        then:
+        1 * controller.setContacts({ TestExecutor.executing() == mainExecutor });
+    }
 
 }

@@ -7,10 +7,12 @@ import org.minezy.android.R;
 import org.minezy.android.data.MinezyApiV1;
 import org.minezy.android.data.MinezyConnection;
 import org.minezy.android.model.Email;
-import org.minezy.android.utils.AsyncTaskUtil;
+import org.minezy.android.utils.Parametrized;
+import org.minezy.android.utils.TaskChainFactory;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.logging.Level;
 
 import static java.util.logging.Logger.getLogger;
@@ -19,19 +21,20 @@ public class EmailsActivityPresenter {
     private static final List<Email> INVALID_EMAILS_LIST =
         Arrays.asList(new Email[]{});
 
-    private final AsyncTaskUtil mAsyncTaskUtil;
+    private final TaskChainFactory mTaskChainFactory;
     private final MinezyApiV1 mMinezyApiV1;
 
     private final EmailsActivityController mController;
     private final Intent mIntent;
 
     public EmailsActivityPresenter(EmailsActivityController controller, Intent intent) {
-        this(controller, intent, new AsyncTaskUtil(), new MinezyApiV1(controller.getContext()));
+        this(controller, intent, new TaskChainFactory(), new MinezyApiV1(controller.getContext()));
     }
 
-    public EmailsActivityPresenter(EmailsActivityController controller, Intent intent, AsyncTaskUtil asyncTaskUtil,
+    public EmailsActivityPresenter(EmailsActivityController controller, Intent intent,
+                                   TaskChainFactory taskChainFactory,
                                    MinezyApiV1 minezyApiV1) {
-        mAsyncTaskUtil = asyncTaskUtil;
+        mTaskChainFactory = taskChainFactory;
         mMinezyApiV1 = minezyApiV1;
         mController = controller;
         mIntent = intent;
@@ -55,10 +58,11 @@ public class EmailsActivityPresenter {
 
     public void onCreate() {
         if (mIntent != null) {
-            mAsyncTaskUtil.execute(
-                new AsyncTaskUtil.Executable<String, Void, List<Email>>() {
+            mTaskChainFactory.create()
+                .background(new Callable<List<Email>>() {
+
                     @Override
-                    public List<Email> doInBackground(String... contacts) {
+                    public List<Email> call() throws Exception {
                         try {
                             return mMinezyApiV1
                                 .getEmailsWithLeftAndRight(getContactForUserAccount(), getToContactEmail());
@@ -67,12 +71,14 @@ public class EmailsActivityPresenter {
                             return INVALID_EMAILS_LIST;
                         }
                     }
-
+                })
+                .main(new Parametrized<List<Email>, Void>() {
                     @Override
-                    public void onPostExecute(List<Email> result) {
+                    public Void perform(List<Email> result) throws Exception {
                         if (result.size() > 0) {
                             mController.setEmails(result);
                         }
+                        return null;
                     }
                 });
         }
