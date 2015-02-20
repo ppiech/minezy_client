@@ -11,7 +11,8 @@ import org.minezy.android.R;
 import org.minezy.android.data.MinezyApiV1;
 import org.minezy.android.data.MinezyConnection;
 import org.minezy.android.model.Contact;
-import org.minezy.android.utils.AsyncTaskUtil;
+import org.minezy.android.utils.Parametrized;
+import org.minezy.android.utils.TaskChainFactory;
 
 import java.util.Arrays;
 import java.util.List;
@@ -24,43 +25,23 @@ public class ContactsActivityPresenter {
     private static final List<Contact> INVALID_CONTACTS_LIST =
         Arrays.asList(new Contact[]{new Contact("<invalid>", "<invalid>")});
 
-    private final AsyncTaskUtil mAsyncTaskUtil;
     private final MinezyApiV1 mMinezyApiV1;
+    private final TaskChainFactory mTaskChainFactory;
     private final SharedPreferences mSharedPreferences;
 
     private final ContactsActivityController mController;
 
     public ContactsActivityPresenter(ContactsActivityController controller) {
-        this(controller, new AsyncTaskUtil(), new MinezyApiV1(controller.getContext()),
+        this(controller, new TaskChainFactory(), new MinezyApiV1(controller.getContext()),
             PreferenceManager.getDefaultSharedPreferences(controller.getContext()));
     }
 
-    public ContactsActivityPresenter(ContactsActivityController controller, AsyncTaskUtil asyncTaskUtil,
+    public ContactsActivityPresenter(ContactsActivityController controller, TaskChainFactory taskChainFactory,
                                      MinezyApiV1 minezyApiV1, SharedPreferences sharedPreferences) {
         mController = controller;
-        mAsyncTaskUtil = asyncTaskUtil;
         mMinezyApiV1 = minezyApiV1;
         mSharedPreferences = sharedPreferences;
-    }
-
-    private class RetrieveContactsTask extends AsyncTaskUtil.Executable<String, Void, List<Contact>> {
-        @Override
-        public List<Contact> doInBackground(String... left) {
-            try {
-                return mMinezyApiV1.getContactsWithLeft(left[0]);
-            } catch (MinezyApiV1.MinezyApiException | MinezyConnection.MinezyConnectionException e) {
-                getLogger(getClass().getName()).log(Level.SEVERE, "Error retrieving contacts:", e);
-                return INVALID_CONTACTS_LIST;
-            }
-        }
-
-        @Override
-        public void onPostExecute(List<Contact> contacts) {
-            super.onPostExecute(contacts);
-            if (contacts.size() > 0) {
-                mController.setContacts(contacts);
-            }
-        }
+        mTaskChainFactory = taskChainFactory;
     }
 
     private String getString(int resId) {
@@ -74,7 +55,29 @@ public class ContactsActivityPresenter {
 
 
     public void onCreate() {
-        mAsyncTaskUtil.execute(new RetrieveContactsTask(), getContactForUserAccount());
+        mTaskChainFactory.create()
+            .param(getContactForUserAccount())
+            .background(new Parametrized<String, List<Contact>>() {
+                @Override
+                public List<Contact> perform(String left) throws Exception {
+                    try {
+                        return mMinezyApiV1.getContactsWithLeft(left);
+                    } catch (MinezyApiV1.MinezyApiException | MinezyConnection.MinezyConnectionException e) {
+                        getLogger(getClass().getName()).log(Level.SEVERE, "Error retrieving contacts:", e);
+                        return INVALID_CONTACTS_LIST;
+                    }
+                }
+            })
+            .main(new Parametrized<List<Contact>, Void>() {
+                @Override
+                public Void perform(List<Contact> contacts) throws Exception {
+                    if (contacts.size() > 0) {
+                        mController.setContacts(contacts);
+                    }
+                    return null;
+                }
+            })
+            .execute();
     }
 
     public void onDestroy() {

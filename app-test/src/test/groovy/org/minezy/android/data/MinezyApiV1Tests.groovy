@@ -1,13 +1,13 @@
 package org.minezy.android.data
 
-import android.content.Context
 import org.minezy.android.model.Contact
 import org.minezy.android.model.Email
+import org.robolectric.Robolectric
 import pl.polidea.robospock.RoboSpecification
 
 class MinezyV1ApiSpecification extends RoboSpecification {
 
-    def context = Mock(Context)
+    def context = Robolectric.application
     def connection = Mock(MinezyConnection);
     def apiV1 = new MinezyApiV1(context, connection);
 
