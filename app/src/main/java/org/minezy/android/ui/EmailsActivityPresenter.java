@@ -1,6 +1,7 @@
 package org.minezy.android.ui;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 import org.minezy.android.R;
@@ -23,19 +24,22 @@ public class EmailsActivityPresenter {
 
     private final TaskChainFactory mTaskChainFactory;
     private final MinezyApiV1 mMinezyApiV1;
+    private final SharedPreferences mSharedPreferences;
 
     private final EmailsActivityController mController;
     private final Intent mIntent;
 
     public EmailsActivityPresenter(EmailsActivityController controller, Intent intent) {
-        this(controller, intent, new TaskChainFactory(), new MinezyApiV1(controller.getContext()));
+        this(controller, intent, new TaskChainFactory(), new MinezyApiV1(controller.getContext()),
+            PreferenceManager.getDefaultSharedPreferences(controller.getContext()));
     }
 
     public EmailsActivityPresenter(EmailsActivityController controller, Intent intent,
                                    TaskChainFactory taskChainFactory,
-                                   MinezyApiV1 minezyApiV1) {
+                                   MinezyApiV1 minezyApiV1, SharedPreferences prefs) {
         mTaskChainFactory = taskChainFactory;
         mMinezyApiV1 = minezyApiV1;
+        mSharedPreferences = prefs;
         mController = controller;
         mIntent = intent;
     }
@@ -46,9 +50,8 @@ public class EmailsActivityPresenter {
     }
 
     private String getContactForUserAccount() {
-        return PreferenceManager.getDefaultSharedPreferences(mController.getContext()).
-            getString(getString(R.string.pref_account_email),
-                getString(R.string.pref_default_account_email));
+        return mSharedPreferences.getString(getString(R.string.pref_account_email),
+            getString(R.string.pref_default_account_email));
     }
 
 
@@ -60,12 +63,11 @@ public class EmailsActivityPresenter {
         if (mIntent != null) {
             mTaskChainFactory.create()
                 .background(new Callable<List<Email>>() {
-
                     @Override
                     public List<Email> call() throws Exception {
                         try {
-                            return mMinezyApiV1
-                                .getEmailsWithLeftAndRight(getContactForUserAccount(), getToContactEmail());
+                            return mMinezyApiV1.getEmailsWithLeftAndRight(getContactForUserAccount(),
+                                getToContactEmail());
                         } catch (MinezyApiV1.MinezyApiException | MinezyConnection.MinezyConnectionException e) {
                             getLogger(getClass().getName()).log(Level.SEVERE, "Error retrieving emails:", e);
                             return INVALID_EMAILS_LIST;
@@ -80,7 +82,7 @@ public class EmailsActivityPresenter {
                         }
                         return null;
                     }
-                });
+                }).execute();
         }
     }
 

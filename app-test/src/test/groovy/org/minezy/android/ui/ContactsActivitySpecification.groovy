@@ -16,9 +16,10 @@ class ContactsActivitySpecification extends RoboSpecification {
             new Contact("vince.kaminski@enron.com", "Vince J Kaminski"),
             new Contact("jeff.dasovich@enron.com", "Jeff Dasovich")
     ]
+
+    def context = Robolectric.application
     def apiV1 = Mock(MinezyApiV1)
     def controller = Mock(ContactsActivityController)
-    def context = Robolectric.application
     def sharedPreferences = Mock(SharedPreferences)
     def mainExecutor = new TestExecutor();
     def backgroundExecutor = new TestExecutor();
