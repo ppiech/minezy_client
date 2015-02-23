@@ -16,6 +16,9 @@ public class ThreadPerRunExecutor implements Executor {
 
     @Override
     public void execute(Runnable runnable) {
-        new Thread(runnable, mName).start();
+        Thread t = mName != null ? new Thread(runnable, mName) : new Thread(runnable);
+        t.start();
     }
+
+
 }

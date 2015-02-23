@@ -13,6 +13,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.logging.Level;
 
+import javax.inject.Inject;
+
 import static java.util.logging.Logger.getLogger;
 
 public class MinezyConnection {
@@ -25,7 +27,8 @@ public class MinezyConnection {
 
     public static final int TIMEOUT = 30000;
 
-    private final Context mContext;
+    @Inject
+    Context mContext;
 
     public MinezyConnection(Context context) {
         mContext = context;

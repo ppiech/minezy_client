@@ -2,4 +2,18 @@ apply plugin: 'robospock'
 
 robospock {
     android = project(':app')
+
+    afterConfigured { roboSpockCongic ->
+        def tester = roboSpockCongic.getTester()
+        tester.dependencies {
+            testCompile 'com.squareup.dagger:dagger:1.2.+'
+            testCompile 'com.squareup.dagger:dagger-compiler:1.2.+'
+        }
+    }
+
 }
+
+
+
+
+
