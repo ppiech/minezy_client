@@ -8,14 +8,14 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:padding="15dp"
-        android:background="@drawable/white_panel_holo_light">
-
+        android:background="@android:color/transparent">
 
         <ImageView
             android:layout_width="60dp"
             android:layout_height="60dp"
-            android:layout_gravity="center_horizontal"
+            android:layout_gravity="center"
             android:id="@+id/imageView"
+            android:elevation="5dp"
             android:src="@drawable/contact"/>
 
         <TextView
