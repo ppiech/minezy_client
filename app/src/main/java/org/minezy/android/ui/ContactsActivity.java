@@ -8,6 +8,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.ArrayAdapter;
 
@@ -51,8 +52,11 @@ public class ContactsActivity extends ActionBarActivity implements ContactsActiv
         });
 
         WebView webView = (WebView) findViewById(R.id.webview);
+        WebSettings settings = webView.getSettings();
+        settings.setAllowFileAccessFromFileURLs(true);
+        settings.setAllowUniversalAccessFromFileURLs(true);
         webView.getSettings().setJavaScriptEnabled(true);
-        webView.loadUrl("http://bl.ocks.org/mbostock/raw/4062045/");
+        webView.loadUrl("file:///android_asset/graph.html");
 
         mPresenter = ((MinezyApplication) getApplication()).getObjectGraph().get(ContactsActivityPresenter.class);
         mPresenter.onCreate(this);
