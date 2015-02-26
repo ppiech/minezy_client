@@ -1,7 +1,9 @@
 package org.minezy.android.ui
 
 import android.content.SharedPreferences
+import dagger.ObjectGraph
 import org.minezy.android.R
+import org.minezy.android.TestModule
 import org.minezy.android.data.MinezyApiV1
 import org.minezy.android.model.Contact
 import org.minezy.android.utils.TaskChainFactory
@@ -17,26 +19,28 @@ class ContactsActivitySpecification extends RoboSpecification {
             new Contact("jeff.dasovich@enron.com", "Jeff Dasovich")
     ]
 
-    def context = Robolectric.application
-    def apiV1 = Mock(MinezyApiV1)
+    def module = new TestModule()
     def controller = Mock(ContactsActivityController)
-    def sharedPreferences = Mock(SharedPreferences)
     def mainExecutor = new TestExecutor();
     def backgroundExecutor = new TestExecutor();
-    def taskChainFactory = new TaskChainFactory(mainExecutor, backgroundExecutor);
-
-    def presenter
+    def presenter = new ContactsActivityPresenter()
 
     def setup() {
-        sharedPreferences.getString('account_email', _) >> "pete.davis@enron.com"
-        controller.getContext() >> context
-        presenter = new ContactsActivityPresenter(controller, taskChainFactory, apiV1, sharedPreferences)
-        apiV1.getContactsWithLeft('pete.davis@enron.com') >> contacts
+        module.context = Robolectric.application
+        module.apiV1 = Mock(MinezyApiV1)
+        module.sharedPreferences = Mock(SharedPreferences)
+        module.taskChainFactory = new TaskChainFactory(mainExecutor, backgroundExecutor);
+
+        module.sharedPreferences.getString('account_email', _) >> "pete.davis@enron.com"
+        controller.getContext() >> module.context
+        module.apiV1.getContactsWithLeft('pete.davis@enron.com') >> contacts
+
+        ObjectGraph.create(module).inject(presenter)
     }
 
     def "Robolectric.application context should return strings from resources"() {
         when:
-        def prefs_account_email = context.getString(R.string.pref_account_email)
+        def prefs_account_email = module.context.getString(R.string.pref_account_email)
 
         then:
         prefs_account_email == "account_email"
@@ -45,16 +49,16 @@ class ContactsActivitySpecification extends RoboSpecification {
 
     def "onCreate() retrieves contacts from apiV1 on background thread"() {
         when:
-        presenter.onCreate()
+        presenter.onCreate(controller)
 
         then:
-        1 * apiV1.getContactsWithLeft({ TestExecutor.executing() == backgroundExecutor })
+        1 * module.apiV1.getContactsWithLeft({ TestExecutor.executing() == backgroundExecutor })
     }
 
 
     def "onCreate() should set contacts to view controller"() {
         when:
-        presenter.onCreate()
+        presenter.onCreate(controller)
 
         then:
         1 * controller.setContacts(contacts);
@@ -62,7 +66,7 @@ class ContactsActivitySpecification extends RoboSpecification {
 
     def "onCreate() calls view controller on main thread"() {
         when:
-        presenter.onCreate()
+        presenter.onCreate(controller)
 
         then:
         1 * controller.setContacts({ TestExecutor.executing() == mainExecutor });

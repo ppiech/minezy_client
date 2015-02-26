@@ -2,7 +2,6 @@ package org.minezy.android.ui;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
@@ -18,6 +17,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import static java.util.logging.Logger.getLogger;
 
 public class ContactsActivityPresenter {
@@ -25,23 +27,20 @@ public class ContactsActivityPresenter {
     private static final List<Contact> INVALID_CONTACTS_LIST =
         Arrays.asList(new Contact[]{new Contact("<invalid>", "<invalid>")});
 
-    private final MinezyApiV1 mMinezyApiV1;
-    private final TaskChainFactory mTaskChainFactory;
-    private final SharedPreferences mSharedPreferences;
+    @Inject
+    MinezyApiV1 mMinezyApiV1;
 
-    private final ContactsActivityController mController;
+    @Inject
+    @Named("raw thread")
+    TaskChainFactory mTaskChainFactory;
 
-    public ContactsActivityPresenter(ContactsActivityController controller) {
-        this(controller, new TaskChainFactory(), new MinezyApiV1(controller.getContext()),
-            PreferenceManager.getDefaultSharedPreferences(controller.getContext()));
-    }
+    @Inject
+    @Named("default")
+    SharedPreferences mSharedPreferences;
 
-    public ContactsActivityPresenter(ContactsActivityController controller, TaskChainFactory taskChainFactory,
-                                     MinezyApiV1 minezyApiV1, SharedPreferences sharedPreferences) {
-        mController = controller;
-        mMinezyApiV1 = minezyApiV1;
-        mSharedPreferences = sharedPreferences;
-        mTaskChainFactory = taskChainFactory;
+    private ContactsActivityController mController;
+
+    public ContactsActivityPresenter() {
     }
 
     private String getString(int resId) {
@@ -53,8 +52,8 @@ public class ContactsActivityPresenter {
             getString(R.string.pref_default_account_email));
     }
 
-
-    public void onCreate() {
+    public void onCreate(ContactsActivityController controller) {
+        mController = controller;
         mTaskChainFactory.create()
             .param(getContactForUserAccount())
             .background(new Parametrized<String, List<Contact>>() {

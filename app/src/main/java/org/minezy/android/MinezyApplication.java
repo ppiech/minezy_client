@@ -19,9 +19,13 @@ public class MinezyApplication extends Application {
 
     protected List<Object> getModules() {
         return Arrays.asList(
-            new AndroidModule(this),
-            new MinezyModule()
+            (Object) new MinezyModule(this)
         );
+    }
+
+
+    public ObjectGraph getObjectGraph() {
+        return mGraph;
     }
 
     public void inject(Object object) {

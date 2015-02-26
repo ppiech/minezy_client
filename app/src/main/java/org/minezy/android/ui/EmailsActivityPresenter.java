@@ -2,7 +2,6 @@ package org.minezy.android.ui;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 
 import org.minezy.android.R;
 import org.minezy.android.data.MinezyApiV1;
@@ -16,34 +15,31 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import static java.util.logging.Logger.getLogger;
 
 public class EmailsActivityPresenter {
     private static final List<Email> INVALID_EMAILS_LIST =
         Arrays.asList(new Email[]{});
 
-    private final TaskChainFactory mTaskChainFactory;
-    private final MinezyApiV1 mMinezyApiV1;
-    private final SharedPreferences mSharedPreferences;
+    @Inject
+    @Named("raw thread")
+    TaskChainFactory mTaskChainFactory;
 
-    private final EmailsActivityController mController;
-    private final Intent mIntent;
+    @Inject
+    MinezyApiV1 mMinezyApiV1;
 
-    public EmailsActivityPresenter(EmailsActivityController controller, Intent intent) {
-        this(controller, intent, new TaskChainFactory(), new MinezyApiV1(controller.getContext()),
-            PreferenceManager.getDefaultSharedPreferences(controller.getContext()));
+    @Inject
+    @Named("default")
+    SharedPreferences mSharedPreferences;
+
+    private EmailsActivityController mController;
+    private Intent mIntent;
+
+    public EmailsActivityPresenter() {
     }
-
-    public EmailsActivityPresenter(EmailsActivityController controller, Intent intent,
-                                   TaskChainFactory taskChainFactory,
-                                   MinezyApiV1 minezyApiV1, SharedPreferences prefs) {
-        mTaskChainFactory = taskChainFactory;
-        mMinezyApiV1 = minezyApiV1;
-        mSharedPreferences = prefs;
-        mController = controller;
-        mIntent = intent;
-    }
-
 
     private String getString(int resId) {
         return mController.getContext().getString(resId);
@@ -59,7 +55,9 @@ public class EmailsActivityPresenter {
         return mIntent.getStringExtra(EmailsActivity.ARG_CONTACT);
     }
 
-    public void onCreate() {
+    public void onCreate(EmailsActivityController controller, Intent intent) {
+        mController = controller;
+        mIntent = intent;
         if (mIntent != null) {
             mTaskChainFactory.create()
                 .background(new Callable<List<Email>>() {
@@ -92,9 +90,6 @@ public class EmailsActivityPresenter {
 
     public void onEmailsItemUpdate(EmailsItemController item) {
         item.setName(item.getEmail().getSubject());
-    }
-
-    public void onEmailssItemSelected(EmailsItemController item) {
     }
 }
 

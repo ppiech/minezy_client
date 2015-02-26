@@ -1,7 +1,5 @@
 package org.minezy.android.data;
 
-import android.content.Context;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -14,18 +12,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.inject.Inject;
+
 public class MinezyApiV1 {
-    public MinezyApiV1(Context context) {
-        this(context, new MinezyConnection(context));
-    }
 
-    MinezyApiV1(Context context, MinezyConnection connection) {
-        mConnection = connection;
-        mContext = context;
-    }
-
-    private final Context mContext;
-    private final MinezyConnection mConnection;
+    @Inject
+    MinezyConnection mConnection;
 
     public static class MinezyApiException extends Exception {
         public MinezyApiException(String message, Throwable cause) {

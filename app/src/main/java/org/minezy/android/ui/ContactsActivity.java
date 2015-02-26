@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.ArrayAdapter;
 
+import org.minezy.android.MinezyApplication;
 import org.minezy.android.R;
 import org.minezy.android.model.Contact;
 
@@ -53,10 +54,9 @@ public class ContactsActivity extends ActionBarActivity implements ContactsActiv
         webView.getSettings().setJavaScriptEnabled(true);
         webView.loadUrl("http://bl.ocks.org/mbostock/raw/4062045/");
 
-        mPresenter = new ContactsActivityPresenter(this);
-        mPresenter.onCreate();
+        mPresenter = ((MinezyApplication) getApplication()).getObjectGraph().get(ContactsActivityPresenter.class);
+        mPresenter.onCreate(this);
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

@@ -3,6 +3,7 @@ package org.minezy.android.data;
 import android.content.Context;
 import android.preference.PreferenceManager;
 
+import org.minezy.android.ForApplication;
 import org.minezy.android.R;
 
 import java.io.BufferedReader;
@@ -28,11 +29,8 @@ public class MinezyConnection {
     public static final int TIMEOUT = 30000;
 
     @Inject
+    @ForApplication
     Context mContext;
-
-    public MinezyConnection(Context context) {
-        mContext = context;
-    }
 
     private String getServerAddress() {
         return PreferenceManager.getDefaultSharedPreferences(mContext)

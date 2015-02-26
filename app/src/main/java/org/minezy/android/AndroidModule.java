@@ -1,6 +1,8 @@
 package org.minezy.android;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 
 import javax.inject.Singleton;
 
@@ -16,14 +18,18 @@ public class AndroidModule {
         this.mApplication = application;
     }
 
-    /**
-     * Allow the application context to be injected but require that it be annotated with
-     * {@link ForApplication @Annotation} to explicitly differentiate it from an activity context.
-     */
     @Provides
     @Singleton
     @ForApplication
     Context provideApplicationContext() {
         return mApplication;
     }
+
+    @Provides
+    @Singleton
+    @ForApplication
+    SharedPreferences provideSharedPreferences() {
+        return PreferenceManager.getDefaultSharedPreferences(mApplication);
+    }
+
 }

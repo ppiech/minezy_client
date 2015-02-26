@@ -1,5 +1,7 @@
 package org.minezy.android.data
 
+import dagger.ObjectGraph
+import org.minezy.android.TestModule
 import org.minezy.android.model.Contact
 import org.minezy.android.model.Email
 import org.robolectric.Robolectric
@@ -7,9 +9,17 @@ import pl.polidea.robospock.RoboSpecification
 
 class MinezyV1ApiSpecification extends RoboSpecification {
 
-    def context = Robolectric.application
-    def connection = Mock(MinezyConnection);
-    def apiV1 = new MinezyApiV1(context, connection);
+    def module = new TestModule()
+    def apiV1
+
+    def setup() {
+        module.context = Robolectric.application
+        module.connection = Mock(MinezyConnection)
+
+        apiV1 = new MinezyApiV1()
+        ObjectGraph.create(module).inject(apiV1)
+
+    }
 
     def "getContacts() should return list of contacts"() {
 
@@ -21,7 +31,7 @@ class MinezyV1ApiSpecification extends RoboSpecification {
                         new Contact("jeff.dasovich@enron.com", "Jeff Dasovich")
                 ]
 
-        connection.requestGet("/1/100/contacts/?limit=20") >> """\
+        module.connection.requestGet("/1/100/contacts/?limit=20") >> """\
             {
                 "contacts": {
                     "_query": "MATCH (n:`100`:Contact) WITH n,n.sent+n.to+n.cc+n.bcc AS count WHERE count > 0 RETURN COALESCE(n.name,n.email) as name,n.email,count ORDER BY count DESC, name ASC LIMIT {limit}",
@@ -53,7 +63,7 @@ class MinezyV1ApiSpecification extends RoboSpecification {
 
     def "getEmails() should return list of emails"() {
         when:
-        connection.requestGet("/1/100/emails/?limit=20&order=asc&left=klay%40enron.com&right=savont%40email.msn.com") >> """\
+        module.connection.requestGet("/1/100/emails/?limit=20&order=asc&left=klay%40enron.com&right=savont%40email.msn.com") >> """\
                 {
                   "emails": {
                     "_count": 20,

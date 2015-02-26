@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import org.minezy.android.MinezyApplication;
 import org.minezy.android.R;
 import org.minezy.android.model.Email;
 
@@ -29,8 +30,9 @@ public class EmailsActivity extends ActionBarActivity implements EmailsActivityC
 
         ((ListView) findViewById(R.id.emailsList)).setAdapter(mAdapter);
 
-        mPresenter = new EmailsActivityPresenter(this, getIntent());
-        mPresenter.onCreate();
+        mPresenter = ((MinezyApplication) getApplication()).getObjectGraph().get(EmailsActivityPresenter.class);
+        //mPresenter = new EmailsActivityPresenter(this, getIntent());
+        mPresenter.onCreate(this, getIntent());
     }
 
     @Override
