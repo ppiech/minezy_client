@@ -31,7 +31,7 @@ public class ContactsActivityPresenter {
     MinezyApiV1 mMinezyApiV1;
 
     @Inject
-    @Named("raw thread")
+    @Named("thread per run")
     TaskChainFactory mTaskChainFactory;
 
     @Inject

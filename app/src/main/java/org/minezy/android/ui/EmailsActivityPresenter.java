@@ -25,7 +25,7 @@ public class EmailsActivityPresenter {
         Arrays.asList(new Email[]{});
 
     @Inject
-    @Named("raw thread")
+    @Named("thread per run")
     TaskChainFactory mTaskChainFactory;
 
     @Inject

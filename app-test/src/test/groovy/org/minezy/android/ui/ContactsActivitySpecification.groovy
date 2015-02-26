@@ -6,7 +6,6 @@ import org.minezy.android.R
 import org.minezy.android.TestModule
 import org.minezy.android.data.MinezyApiV1
 import org.minezy.android.model.Contact
-import org.minezy.android.utils.TaskChainFactory
 import org.minezy.android.utils.TestExecutor
 import org.robolectric.Robolectric
 import pl.polidea.robospock.RoboSpecification
@@ -21,15 +20,12 @@ class ContactsActivitySpecification extends RoboSpecification {
 
     def module = new TestModule()
     def controller = Mock(ContactsActivityController)
-    def mainExecutor = new TestExecutor();
-    def backgroundExecutor = new TestExecutor();
     def presenter = new ContactsActivityPresenter()
 
     def setup() {
         module.context = Robolectric.application
         module.apiV1 = Mock(MinezyApiV1)
         module.sharedPreferences = Mock(SharedPreferences)
-        module.taskChainFactory = new TaskChainFactory(mainExecutor, backgroundExecutor);
 
         module.sharedPreferences.getString('account_email', _) >> "pete.davis@enron.com"
         controller.getContext() >> module.context
@@ -52,7 +48,7 @@ class ContactsActivitySpecification extends RoboSpecification {
         presenter.onCreate(controller)
 
         then:
-        1 * module.apiV1.getContactsWithLeft({ TestExecutor.executing() == backgroundExecutor })
+        1 * module.apiV1.getContactsWithLeft({ TestExecutor.executing() == module.backgroundExecutor })
     }
 
 
@@ -69,7 +65,7 @@ class ContactsActivitySpecification extends RoboSpecification {
         presenter.onCreate(controller)
 
         then:
-        1 * controller.setContacts({ TestExecutor.executing() == mainExecutor });
+        1 * controller.setContacts({ TestExecutor.executing() == module.mainExecutor });
     }
 
 }

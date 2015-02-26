@@ -7,7 +7,6 @@ import org.minezy.android.TestModule
 import org.minezy.android.data.MinezyApiV1
 import org.minezy.android.model.Contact
 import org.minezy.android.model.Email
-import org.minezy.android.utils.TaskChainFactory
 import org.minezy.android.utils.TestExecutor
 import org.robolectric.Robolectric
 import pl.polidea.robospock.RoboSpecification
@@ -22,16 +21,13 @@ class EmailsActivitySpecification extends RoboSpecification {
 
     def module = new TestModule()
     def controller = Mock(EmailsActivityController)
-    def mainExecutor = new TestExecutor();
-    def backgroundExecutor = new TestExecutor();
+    def presenter = new EmailsActivityPresenter()
     def intent
-    def presenter
 
     def setup() {
         module.context = Robolectric.application
         module.apiV1 = Mock(MinezyApiV1)
         module.sharedPreferences = Mock(SharedPreferences)
-        module.taskChainFactory = new TaskChainFactory(mainExecutor, backgroundExecutor);
 
         module.sharedPreferences.getString('account_email', _) >> "pete.davis@enron.com"
 
@@ -57,7 +53,7 @@ class EmailsActivitySpecification extends RoboSpecification {
         presenter.onCreate(controller, intent)
 
         then:
-        1 * module.apiV1.getEmailsWithLeftAndRight({ TestExecutor.executing() == backgroundExecutor }, _)
+        1 * module.apiV1.getEmailsWithLeftAndRight({ TestExecutor.executing() == module.backgroundExecutor }, _)
     }
 
 
@@ -74,7 +70,7 @@ class EmailsActivitySpecification extends RoboSpecification {
         presenter.onCreate(controller, intent)
 
         then:
-        1 * controller.setEmails({ TestExecutor.executing() == mainExecutor });
+        1 * controller.setEmails({ TestExecutor.executing() == module.mainExecutor });
     }
 
 }

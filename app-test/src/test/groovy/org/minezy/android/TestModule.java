@@ -8,8 +8,12 @@ import org.minezy.android.data.MinezyConnection;
 import org.minezy.android.ui.ContactsActivityPresenter;
 import org.minezy.android.ui.EmailsActivityPresenter;
 import org.minezy.android.utils.TaskChainFactory;
+import org.minezy.android.utils.TestExecutor;
+
+import java.util.concurrent.Executor;
 
 import javax.inject.Named;
+import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
@@ -21,9 +25,11 @@ import dagger.Provides;
 public class TestModule {
     public Context context;
     public SharedPreferences sharedPreferences;
-    public TaskChainFactory taskChainFactory;
     public MinezyApiV1 apiV1;
     public MinezyConnection connection;
+    public Executor mainExecutor = new TestExecutor();
+    public Executor backgroundExecutor = new TestExecutor();
+    public TaskChainFactory taskChainFactory = new TaskChainFactory(mainExecutor, backgroundExecutor);
 
     @Provides
     @javax.inject.Singleton
@@ -39,12 +45,6 @@ public class TestModule {
     }
 
     @Provides
-    @Named("raw thread")
-    TaskChainFactory provideTaskChainFactory() {
-        return taskChainFactory;
-    }
-
-    @Provides
     MinezyApiV1 provideMinezyApiV1() {
         return apiV1;
     }
@@ -53,4 +53,25 @@ public class TestModule {
     MinezyConnection provideMinezyConnection() {
         return connection;
     }
+
+    @Provides
+    @Named("thread per run")
+    TaskChainFactory provideTaskChainFactory(@Named("main") Executor main,
+                                             @Named("thread per run") Executor background) {
+        return taskChainFactory;
+    }
+
+    @Provides
+    @Singleton
+    @Named("main")
+    Executor provideMainExecutor() {
+        return mainExecutor;
+    }
+
+    @Provides
+    @Named("thread per run")
+    Executor provideThreadPerRunExecutor() {
+        return backgroundExecutor;
+    }
+
 }
