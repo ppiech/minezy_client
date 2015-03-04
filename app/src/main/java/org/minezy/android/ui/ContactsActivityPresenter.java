@@ -2,10 +2,14 @@ package org.minezy.android.ui;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.minezy.android.R;
 import org.minezy.android.data.MinezyApiV1;
 import org.minezy.android.data.MinezyConnection;
@@ -25,7 +29,7 @@ import static java.util.logging.Logger.getLogger;
 public class ContactsActivityPresenter {
 
     private static final List<Contact> INVALID_CONTACTS_LIST =
-        Arrays.asList(new Contact[]{new Contact("<invalid>", "<invalid>")});
+        Arrays.asList(new Contact[]{new Contact("invalid", "invalid")});
 
     @Inject
     MinezyApiV1 mMinezyApiV1;
@@ -72,6 +76,7 @@ public class ContactsActivityPresenter {
                 public Void perform(List<Contact> contacts) throws Exception {
                     if (contacts.size() > 0) {
                         mController.setContacts(contacts);
+                        mController.setWebviewData(makeGraphDataForContacts(contacts));
                     }
                     return null;
                 }
@@ -106,6 +111,32 @@ public class ContactsActivityPresenter {
     private String getContactInitials(Contact contact) {
         String name = contact.getName();
         return name.isEmpty() ? "" : name.substring(0, 1);
+    }
+
+    private JSONObject makeGraphDataForContacts(List<Contact> contacts) {
+        try {
+            JSONArray nodes = new JSONArray();
+            JSONArray links = new JSONArray();
+            for (int i = 0; i < contacts.size(); i++) {
+                Contact contact = contacts.get(i);
+                JSONObject contactJson = new JSONObject();
+                contactJson.put("name", contact.getName());
+                contactJson.put("group", 1);
+                nodes.put(contactJson);
+                JSONObject linkJson = new JSONObject();
+                linkJson.put("source", i);
+                linkJson.put("value", 1);
+                linkJson.put("target", (i + 1) % contacts.size());
+                links.put(linkJson);
+            }
+            JSONObject dataJson = new JSONObject();
+            dataJson.put("nodes", nodes);
+            dataJson.put("links", links);
+            return dataJson;
+        } catch (JSONException e) {
+            Log.e("Minezy", "Error building json", e);
+        }
+        return new JSONObject();
     }
 }
 

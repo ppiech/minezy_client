@@ -3,6 +3,7 @@ package org.minezy.android.ui;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -12,6 +13,8 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.ArrayAdapter;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.minezy.android.MinezyApplication;
 import org.minezy.android.R;
 import org.minezy.android.model.Contact;
@@ -31,6 +34,7 @@ public class ContactsActivity extends ActionBarActivity implements ContactsActiv
     private ContactsActivityPresenter mPresenter;
 
     private ContactAdapter mCotactsAdapter;
+    private WebView mWebView;
 
     @Override
     public Context getContext() {
@@ -40,6 +44,23 @@ public class ContactsActivity extends ActionBarActivity implements ContactsActiv
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        try {
+            JSONObject jsonObject = new JSONObject("{" +
+                                                   "  \"nodes\":[" +
+                                                   "    {\"name\":\"Myriel\",\"group\":1}," +
+                                                   "    {\"name\":\"Napoleon\",\"group\":1}," +
+                                                   "    {\"name\":\"Mlle.Baptistine\",\"group\":1}]," +
+                                                   "\"links\":[" +
+                                                   "    {\"source\":1,\"target\":0,\"value\":1}," +
+                                                   "    {\"source\":2,\"target\":0,\"value\":8}," +
+                                                   "    {\"source\":2,\"target\":1,\"value\":10}]" +
+                                                   "}");
+            Log.e("Minezy", jsonObject.toString());
+        } catch (JSONException e) {
+            Log.e("Minezy", "json", e);
+        }
+
         setContentView(R.layout.contacts_activity);
         mCotactsAdapter = new ContactAdapter(this);
 
@@ -51,12 +72,12 @@ public class ContactsActivity extends ActionBarActivity implements ContactsActiv
             }
         });
 
-        WebView webView = (WebView) findViewById(R.id.webview);
-        WebSettings settings = webView.getSettings();
+        mWebView = (WebView) findViewById(R.id.webview);
+        WebSettings settings = mWebView.getSettings();
         settings.setAllowFileAccessFromFileURLs(true);
         settings.setAllowUniversalAccessFromFileURLs(true);
-        webView.getSettings().setJavaScriptEnabled(true);
-        webView.loadUrl("file:///android_asset/graph.html");
+        mWebView.getSettings().setJavaScriptEnabled(true);
+        mWebView.loadUrl("file:///android_asset/graph.html");
 
         mPresenter = ((MinezyApplication) getApplication()).getObjectGraph().get(ContactsActivityPresenter.class);
         mPresenter.onCreate(this);
@@ -92,6 +113,11 @@ public class ContactsActivity extends ActionBarActivity implements ContactsActiv
         mCotactsAdapter.clear();
         mCotactsAdapter.addAll(contacts);
     }
+
+    public void setWebviewData(JSONObject json) {
+        //mWebView.loadUrl("javascript: var graph = JSON.parse(" + json.toString() + ")" + " displayGraph(null, graph)");
+    }
+
 
     @Override
     protected void onDestroy() {

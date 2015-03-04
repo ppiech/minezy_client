@@ -2,12 +2,15 @@ package org.minezy.android.ui
 
 import android.content.SharedPreferences
 import dagger.ObjectGraph
+import org.json.JSONObject
+import org.json.JSONTokener
 import org.minezy.android.R
 import org.minezy.android.TestModule
 import org.minezy.android.data.MinezyApiV1
 import org.minezy.android.model.Contact
 import org.minezy.android.utils.TestExecutor
 import org.robolectric.Robolectric
+import org.skyscreamer.jsonassert.JSONAssert
 import pl.polidea.robospock.RoboSpecification
 
 class ContactsActivitySpecification extends RoboSpecification {
@@ -17,6 +20,20 @@ class ContactsActivitySpecification extends RoboSpecification {
             new Contact("vince.kaminski@enron.com", "Vince J Kaminski"),
             new Contact("jeff.dasovich@enron.com", "Jeff Dasovich")
     ]
+
+    final JSONObject contactsGraphJson = new JSONObject(new JSONTokener(
+            """\
+            {
+            "nodes": [
+                {"name":"Pete Davis","group":1},
+                {"name":"Vince J Kaminski","group":1},
+                {"name":"Jeff Dasovich","group":1} ],
+            "links":[
+                {"source":0,"target":1,"value":1},
+                {"source":1,"target":2,"value":1},
+                {"source":2,"target":0,"value":1} ]
+            }
+            """));
 
     def module = new TestModule()
     def controller = Mock(ContactsActivityController)
@@ -68,4 +85,30 @@ class ContactsActivitySpecification extends RoboSpecification {
         1 * controller.setContacts({ TestExecutor.executing() == module.mainExecutor });
     }
 
+    def "onCreate() sets contacts' graph data to view controller"() {
+        when:
+        presenter.onCreate(controller)
+
+        then:
+        1 * controller.setWebviewData(_);
+    }
+
+    def "onCreate() sets contacts' graph data to view controller that is valid json"() {
+        when:
+        presenter.onCreate(controller)
+
+        then:
+        1 * controller.setWebviewData({ data -> new JSONObject(data) });
+    }
+
+    def "onCreate() sets contacts' graph data to view controller that matches expected json"() {
+        when:
+        presenter.onCreate(controller)
+
+        then:
+        1 * controller.setWebviewData({ data ->
+            JSONAssert.assertEquals(contactsGraphJson, data, false)
+            true
+        })
+    }
 }
