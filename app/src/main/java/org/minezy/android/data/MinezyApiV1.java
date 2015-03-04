@@ -34,7 +34,7 @@ public class MinezyApiV1 {
         }
     }
 
-    public List<Contact> getContactsWithLeft(String left)
+    public List<Contact> getContacts(String left)
         throws MinezyApiException, MinezyConnection.MinezyConnectionException {
         String response = mConnection.requestGet("/1/100/contacts/?limit=20&left=" + encode(left));
         try {
@@ -44,7 +44,7 @@ public class MinezyApiV1 {
         }
     }
 
-    public List<Email> getEmailsWithLeftAndRight(String left, String right)
+    public List<Email> getEmails(String left, String right)
         throws MinezyApiException, MinezyConnection.MinezyConnectionException {
         String response =
             mConnection

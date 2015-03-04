@@ -32,7 +32,7 @@ class EmailsActivitySpecification extends RoboSpecification {
         module.sharedPreferences.getString('account_email', _) >> "pete.davis@enron.com"
 
         controller.getContext() >> module.context
-        module.apiV1.getEmailsWithLeftAndRight("pete.davis@enron.com", "jeff.dasovich@enron.com") >> emails
+        module.apiV1.getEmails("pete.davis@enron.com", "jeff.dasovich@enron.com") >> emails
         intent = new Intent(module.context, EmailsActivity.class);
         intent.putExtra("contact", "jeff.dasovich@enron.com");
         presenter = new EmailsActivityPresenter()
@@ -45,7 +45,7 @@ class EmailsActivitySpecification extends RoboSpecification {
         presenter.onCreate(controller, intent)
 
         then:
-        1 * module.apiV1.getEmailsWithLeftAndRight("pete.davis@enron.com", "jeff.dasovich@enron.com")
+        1 * module.apiV1.getEmails("pete.davis@enron.com", "jeff.dasovich@enron.com")
     }
 
     def "onCreate() retrieves emails on background thread"() {
@@ -53,7 +53,7 @@ class EmailsActivitySpecification extends RoboSpecification {
         presenter.onCreate(controller, intent)
 
         then:
-        1 * module.apiV1.getEmailsWithLeftAndRight({ TestExecutor.executing() == module.backgroundExecutor }, _)
+        1 * module.apiV1.getEmails({ TestExecutor.executing() == module.backgroundExecutor }, _)
     }
 
 

@@ -46,7 +46,7 @@ class ContactsActivitySpecification extends RoboSpecification {
 
         module.sharedPreferences.getString('account_email', _) >> "pete.davis@enron.com"
         controller.getContext() >> module.context
-        module.apiV1.getContactsWithLeft('pete.davis@enron.com') >> contacts
+        module.apiV1.getContacts('pete.davis@enron.com') >> contacts
 
         ObjectGraph.create(module).inject(presenter)
     }
@@ -65,7 +65,7 @@ class ContactsActivitySpecification extends RoboSpecification {
         presenter.onCreate(controller)
 
         then:
-        1 * module.apiV1.getContactsWithLeft({ TestExecutor.executing() == module.backgroundExecutor })
+        1 * module.apiV1.getContacts({ TestExecutor.executing() == module.backgroundExecutor })
     }
 
 

@@ -64,7 +64,7 @@ public class EmailsActivityPresenter {
                     @Override
                     public List<Email> call() throws Exception {
                         try {
-                            return mMinezyApiV1.getEmailsWithLeftAndRight(getContactForUserAccount(),
+                            return mMinezyApiV1.getEmails(getContactForUserAccount(),
                                 getToContactEmail());
                         } catch (MinezyApiV1.MinezyApiException | MinezyConnection.MinezyConnectionException e) {
                             getLogger(getClass().getName()).log(Level.SEVERE, "Error retrieving emails:", e);

@@ -120,7 +120,7 @@ class MinezyV1ApiSpecification extends RoboSpecification {
 
 
         then:
-        apiV1.getEmailsWithLeftAndRight("klay@enron.com", "savont@email.msn.com") == emailList
+        apiV1.getEmails("klay@enron.com", "savont@email.msn.com") == emailList
     }
 
 

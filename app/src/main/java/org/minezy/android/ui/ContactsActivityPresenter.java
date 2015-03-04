@@ -64,7 +64,7 @@ public class ContactsActivityPresenter {
                 @Override
                 public List<Contact> perform(String left) throws Exception {
                     try {
-                        return mMinezyApiV1.getContactsWithLeft(left);
+                        return mMinezyApiV1.getContacts(left);
                     } catch (MinezyApiV1.MinezyApiException | MinezyConnection.MinezyConnectionException e) {
                         getLogger(getClass().getName()).log(Level.SEVERE, "Error retrieving contacts:", e);
                         return INVALID_CONTACTS_LIST;
