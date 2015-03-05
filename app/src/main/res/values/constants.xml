@@ -2,7 +2,7 @@
 <resources>
 
     <string name="pref_server_address">server_address</string>
-    <string name="pref_default_server_address">http://www.minezy.org:5000</string>
+    <string name="pref_default_server_address">http://www.minezy.org:5001</string>
     <string name="pref_account_email">account_email</string>
     <string name="pref_default_account_email">klay@enron.com</string>
 </resources>
