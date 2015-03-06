@@ -1,6 +1,7 @@
 package org.minezy.android.ui;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -11,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.ArrayAdapter;
 
 import org.json.JSONException;
@@ -68,6 +70,13 @@ public class ContactsActivity extends ActionBarActivity implements ContactsActiv
         getContactListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                mPresenter.onContactsItemClicked(new ContactsItemController(view, mCotactsAdapter.getItem(i), i));
+            }
+        });
+
+        getContactListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 mPresenter.onContactsItemSelected(new ContactsItemController(view, mCotactsAdapter.getItem(i), i));
             }
         });
@@ -78,6 +87,19 @@ public class ContactsActivity extends ActionBarActivity implements ContactsActiv
         settings.setAllowUniversalAccessFromFileURLs(true);
         mWebView.getSettings().setJavaScriptEnabled(true);
         mWebView.loadUrl("file:///android_asset/graph.html");
+        mWebView.setWebViewClient(new WebViewClient() {
+            @Override
+            public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                super.onPageStarted(view, url, favicon);
+                mPresenter.onWebViewPageStarted(url);
+            }
+
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+                mPresenter.onWebViewPageFinished(url);
+            }
+        });
 
         mPresenter = ((MinezyApplication) getApplication()).getObjectGraph().get(ContactsActivityPresenter.class);
         mPresenter.onCreate(this);
@@ -115,7 +137,7 @@ public class ContactsActivity extends ActionBarActivity implements ContactsActiv
     }
 
     public void setWebviewData(JSONObject json) {
-        //mWebView.loadUrl("javascript: var graph = JSON.parse(" + json.toString() + ")" + " displayGraph(null, graph)");
+        mWebView.loadUrl("javascript: var graph = JSON.parse('" + json.toString() + "'); displayGraph(graph)");
     }
 
 

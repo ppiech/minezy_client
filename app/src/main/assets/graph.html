@@ -15,9 +15,9 @@
 </style>
 <body>
 <script src="d3.v3.min.js"></script>
-<script>
+<script language="javascript">
 
-function displayGraph(error, graph) {
+function displayGraph(graph) {
   force
       .nodes(graph.nodes)
       .links(graph.links)
@@ -65,11 +65,16 @@ var svg = d3.select("body").append("svg")
     .attr("width", width)
     .attr("height", height);
 
-//d3.json("data.json", displayGraph);
-
 var graph = JSON.parse('{ "nodes":[ {"name":"Myriel","group":1}, {"name":"Napoleon","group":1}, {"name":"Mlle.Baptistine","group":1}], "links":[ {"source":1,"target":0,"value":1},  {"source":2,"target":0,"value":8},  {"source":2,"target":1,"value":10} ]}')
 
-displayGraph(null, graph)
+displayGraph(graph)
+
+
+
+
+
+
+
 
 
 

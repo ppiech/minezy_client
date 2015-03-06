@@ -43,6 +43,9 @@ public class ContactsActivityPresenter {
     SharedPreferences mSharedPreferences;
 
     private ContactsActivityController mController;
+    private List<Contact> mContacts;
+    private boolean mWebViewLoading;
+    private Runnable mOnWebViewLoadedTask;
 
     public ContactsActivityPresenter() {
     }
@@ -74,9 +77,20 @@ public class ContactsActivityPresenter {
             .main(new Parametrized<List<Contact>, Void>() {
                 @Override
                 public Void perform(List<Contact> contacts) throws Exception {
+                    mContacts = contacts;
                     if (contacts.size() > 0) {
                         mController.setContacts(contacts);
-                        mController.setWebviewData(makeGraphDataForContacts(contacts));
+                        Runnable webViewTask = new Runnable() {
+                            @Override
+                            public void run() {
+                                mController.setWebviewData(makeGraphDataForContacts(mContacts, null));
+                            }
+                        };
+                        if (mWebViewLoading) {
+                            mOnWebViewLoadedTask = webViewTask;
+                        } else {
+                            webViewTask.run();
+                        }
                     }
                     return null;
                 }
@@ -102,10 +116,37 @@ public class ContactsActivityPresenter {
             .buildRound(getContactInitials(item.getContact()), ColorGenerator.MATERIAL.getRandomColor()));
     }
 
-    public void onContactsItemSelected(ContactsItemController item) {
+    public void onContactsItemSelected(final ContactsItemController item) {
+        Runnable webViewTask = new Runnable() {
+            @Override
+            public void run() {
+                mController.setWebviewData(makeGraphDataForContacts(mContacts, item.getContact()));
+            }
+        };
+        if (mWebViewLoading) {
+            mOnWebViewLoadedTask = webViewTask;
+        } else {
+            webViewTask.run();
+        }
+
+    }
+
+    public void onContactsItemClicked(ContactsItemController item) {
         Intent intent = new Intent(mController.getContext(), EmailsActivity.class);
         intent.putExtra(EmailsActivity.ARG_CONTACT, item.getContact().getEmail());
         mController.startActivity(intent);
+    }
+
+    public void onWebViewPageStarted(String url) {
+        mWebViewLoading = true;
+    }
+
+    public void onWebViewPageFinished(String url) {
+        mWebViewLoading = false;
+        if (mOnWebViewLoadedTask != null) {
+            mOnWebViewLoadedTask.run();
+            mOnWebViewLoadedTask = null;
+        }
     }
 
     private String getContactInitials(Contact contact) {
@@ -113,7 +154,7 @@ public class ContactsActivityPresenter {
         return name.isEmpty() ? "" : name.substring(0, 1);
     }
 
-    private JSONObject makeGraphDataForContacts(List<Contact> contacts) {
+    private JSONObject makeGraphDataForContacts(List<Contact> contacts, Contact selected) {
         try {
             JSONArray nodes = new JSONArray();
             JSONArray links = new JSONArray();
