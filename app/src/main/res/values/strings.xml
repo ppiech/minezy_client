@@ -2,6 +2,7 @@
 <resources>
 
     <string name="app_name">minezy</string>
+    <string name="user_display_name">Me</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
 

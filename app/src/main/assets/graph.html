@@ -51,6 +51,10 @@ function displayGraph(graph) {
   });
 }
 
+function clearGraph() {
+    svg.selectAll("*").remove()
+}
+
 var width = 400,
     height = 400;
 
@@ -68,17 +72,6 @@ var svg = d3.select("body").append("svg")
 var graph = JSON.parse('{ "nodes":[ {"name":"Myriel","group":1}, {"name":"Napoleon","group":1}, {"name":"Mlle.Baptistine","group":1}], "links":[ {"source":1,"target":0,"value":1},  {"source":2,"target":0,"value":8},  {"source":2,"target":1,"value":10} ]}')
 
 displayGraph(graph)
-
-
-
-
-
-
-
-
-
-
-
 
 
 

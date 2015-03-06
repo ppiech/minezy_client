@@ -54,15 +54,19 @@ public class ContactsActivityPresenter {
         return mController.getContext().getString(resId);
     }
 
-    private String getContactForUserAccount() {
+    private String getEmailForUserAccount() {
         return mSharedPreferences.getString(getString(R.string.pref_account_email),
             getString(R.string.pref_default_account_email));
+    }
+
+    private Contact getContactForUserAccount() {
+        return new Contact(getEmailForUserAccount(), getString(R.string.user_display_name));
     }
 
     public void onCreate(ContactsActivityController controller) {
         mController = controller;
         mTaskChainFactory.create()
-            .param(getContactForUserAccount())
+            .param(getEmailForUserAccount())
             .background(new Parametrized<String, List<Contact>>() {
                 @Override
                 public List<Contact> perform(String left) throws Exception {
@@ -158,17 +162,13 @@ public class ContactsActivityPresenter {
         try {
             JSONArray nodes = new JSONArray();
             JSONArray links = new JSONArray();
-            for (int i = 0; i < contacts.size(); i++) {
-                Contact contact = contacts.get(i);
-                JSONObject contactJson = new JSONObject();
-                contactJson.put("name", contact.getName());
-                contactJson.put("group", 1);
-                nodes.put(contactJson);
-                JSONObject linkJson = new JSONObject();
-                linkJson.put("source", i);
-                linkJson.put("value", 1);
-                linkJson.put("target", (i + 1) % contacts.size());
-                links.put(linkJson);
+            int indexInNodes = 0;
+            nodes.put(makeContactJson(getContactForUserAccount()));
+            indexInNodes++;
+            for (Contact contact : contacts) {
+                nodes.put(makeContactJson(contact));
+                links.put(makeLinkJson(0, indexInNodes, 1));
+                indexInNodes++;
             }
             JSONObject dataJson = new JSONObject();
             dataJson.put("nodes", nodes);
@@ -178,6 +178,21 @@ public class ContactsActivityPresenter {
             Log.e("Minezy", "Error building json", e);
         }
         return new JSONObject();
+    }
+
+    private JSONObject makeContactJson(Contact contact) throws JSONException {
+        JSONObject contactJson = new JSONObject();
+        contactJson.put("name", contact.getName());
+        contactJson.put("group", 1);
+        return contactJson;
+    }
+
+    private JSONObject makeLinkJson(int source, int target, int value) throws JSONException {
+        JSONObject linkJson = new JSONObject();
+        linkJson.put("source", source);
+        linkJson.put("target", target);
+        linkJson.put("value", value);
+        return linkJson;
     }
 }
 

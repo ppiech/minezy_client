@@ -137,7 +137,9 @@ public class ContactsActivity extends ActionBarActivity implements ContactsActiv
     }
 
     public void setWebviewData(JSONObject json) {
-        mWebView.loadUrl("javascript: var graph = JSON.parse('" + json.toString() + "'); displayGraph(graph)");
+        mWebView.loadUrl(
+            "javascript: var graph = JSON.parse('" + json.toString() +
+            "'); svg.selectAll(\"*\").remove(); displayGraph(graph)");
     }
 
 
