@@ -5,10 +5,11 @@
                 android:padding="5dp">
 
     <RelativeLayout
-        android:layout_width="fill_parent"
+        android:layout_width="wrap_content"
         android:layout_height="fill_parent"
         android:padding="15dp"
-        android:background="@android:color/transparent">
+        android:background="@android:color/transparent"
+        >
 
         <ImageView
             android:layout_width="60dp"
@@ -16,14 +17,18 @@
             android:layout_gravity="center"
             android:id="@+id/imageView"
             android:elevation="5dp"
-            android:src="@drawable/contact"/>
+            android:src="@drawable/contact"
+            android:layout_alignParentEnd="false"
+            android:layout_centerHorizontal="true"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/imageView"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="Small Text"
-            android:id="@+id/nameTextView"/>
+            android:text="Small Text Small Text Small Text Small Text "
+            android:id="@+id/nameTextView"
+            android:maxWidth="150dp"
+            android:maxLines="2"/>
     </RelativeLayout>
 </RelativeLayout>
