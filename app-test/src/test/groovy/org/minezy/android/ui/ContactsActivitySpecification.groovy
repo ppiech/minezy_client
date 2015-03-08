@@ -8,6 +8,7 @@ import org.minezy.android.R
 import org.minezy.android.TestModule
 import org.minezy.android.data.MinezyApiV1
 import org.minezy.android.model.Contact
+import org.minezy.android.utils.ImmediateTestScheduler
 import org.minezy.android.utils.TestExecutor
 import org.robolectric.Robolectric
 import org.skyscreamer.jsonassert.JSONAssert
@@ -25,13 +26,14 @@ class ContactsActivitySpecification extends RoboSpecification {
             """\
             {
             "nodes": [
+                {"name":"Me","group":1},
                 {"name":"Pete Davis","group":1},
                 {"name":"Vince J Kaminski","group":1},
                 {"name":"Jeff Dasovich","group":1} ],
             "links":[
                 {"source":0,"target":1,"value":1},
-                {"source":1,"target":2,"value":1},
-                {"source":2,"target":0,"value":1} ]
+                {"source":0,"target":2,"value":1},
+                {"source":0,"target":3,"value":1} ]
             }
             """));
 
@@ -65,7 +67,9 @@ class ContactsActivitySpecification extends RoboSpecification {
         presenter.onCreate(controller)
 
         then:
-        1 * module.apiV1.getContacts({ TestExecutor.executing() == module.backgroundExecutor })
+        1 * module.apiV1.getContacts({
+            ImmediateTestScheduler.sCurrent == module.ioScheduler
+        }) >> contacts
     }
 
 
@@ -82,7 +86,9 @@ class ContactsActivitySpecification extends RoboSpecification {
         presenter.onCreate(controller)
 
         then:
-        1 * controller.setContacts({ TestExecutor.executing() == module.mainExecutor });
+        1 * controller.setContacts({
+            ImmediateTestScheduler.sCurrent == module.mainScheduler
+        });
     }
 
     def "onCreate() sets contacts' graph data to view controller"() {

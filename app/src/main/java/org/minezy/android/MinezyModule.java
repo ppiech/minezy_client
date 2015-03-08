@@ -17,6 +17,9 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import rx.Scheduler;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 
 @Module(
@@ -62,6 +65,19 @@ public class MinezyModule {
     @Named("thread per run")
     Executor provideThreadPerRunExecutor() {
         return new ThreadPerRunExecutor();
+    }
+
+    @Provides
+    @Singleton
+    @Named("main")
+    Scheduler provideMainScheduler() {
+        return AndroidSchedulers.mainThread();
+    }
+
+    @Provides
+    @Named("io")
+    Scheduler provideThreadScheduler() {
+        return Schedulers.io();
     }
 
 }

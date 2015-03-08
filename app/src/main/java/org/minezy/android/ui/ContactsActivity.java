@@ -91,13 +91,17 @@ public class ContactsActivity extends ActionBarActivity implements ContactsActiv
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 super.onPageStarted(view, url, favicon);
-                mPresenter.onWebViewPageStarted(url);
+                if (mPresenter != null) {
+                    mPresenter.onWebViewPageStarted(url);
+                }
             }
 
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
-                mPresenter.onWebViewPageFinished(url);
+                if (mPresenter != null) {
+                    mPresenter.onWebViewPageFinished(url);
+                }
             }
         });
 
@@ -139,13 +143,14 @@ public class ContactsActivity extends ActionBarActivity implements ContactsActiv
     public void setWebviewData(JSONObject json) {
         mWebView.loadUrl(
             "javascript: var graph = JSON.parse('" + json.toString() +
-            "'); svg.selectAll(\"*\").remove(); displayGraph(graph)");
+            "'); clearGraph(); displayGraph(graph)");
     }
 
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        mWebView.destroy();
         mPresenter.onDestroy();
         mPresenter = null;
     }
@@ -165,7 +170,12 @@ public class ContactsActivity extends ActionBarActivity implements ContactsActiv
 
         @Override
         public long getItemId(int position) {
-            return getItem(position).hashCode();
+            try {
+                return getItem(position).hashCode();
+            } catch (IndexOutOfBoundsException e) {
+                // Seen HList throw an IOOB, seems like a bug in the view.
+                return 0;
+            }
         }
 
         @Override

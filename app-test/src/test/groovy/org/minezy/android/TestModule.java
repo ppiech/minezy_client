@@ -7,6 +7,7 @@ import org.minezy.android.data.MinezyApiV1;
 import org.minezy.android.data.MinezyConnection;
 import org.minezy.android.ui.ContactsActivityPresenter;
 import org.minezy.android.ui.EmailsActivityPresenter;
+import org.minezy.android.utils.ImmediateTestScheduler;
 import org.minezy.android.utils.TaskChainFactory;
 import org.minezy.android.utils.TestExecutor;
 
@@ -17,6 +18,7 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import rx.Scheduler;
 
 @Module(
     injects = {ContactsActivityPresenter.class, EmailsActivityPresenter.class, MinezyApiV1.class},
@@ -30,6 +32,8 @@ public class TestModule {
     public Executor mainExecutor = new TestExecutor();
     public Executor backgroundExecutor = new TestExecutor();
     public TaskChainFactory taskChainFactory = new TaskChainFactory(mainExecutor, backgroundExecutor);
+    public Scheduler mainScheduler = new ImmediateTestScheduler();
+    public Scheduler ioScheduler = new ImmediateTestScheduler();
 
     @Provides
     @javax.inject.Singleton
@@ -72,6 +76,19 @@ public class TestModule {
     @Named("thread per run")
     Executor provideThreadPerRunExecutor() {
         return backgroundExecutor;
+    }
+
+    @Provides
+    @Singleton
+    @Named("main")
+    Scheduler provideMainScheduler() {
+        return mainScheduler;
+    }
+
+    @Provides
+    @Named("io")
+    Scheduler provideThreadScheduler() {
+        return ioScheduler;
     }
 
 }

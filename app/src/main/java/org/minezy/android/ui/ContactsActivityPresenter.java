@@ -14,17 +14,17 @@ import org.minezy.android.R;
 import org.minezy.android.data.MinezyApiV1;
 import org.minezy.android.data.MinezyConnection;
 import org.minezy.android.model.Contact;
-import org.minezy.android.utils.Parametrized;
-import org.minezy.android.utils.TaskChainFactory;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Level;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import static java.util.logging.Logger.getLogger;
+import rx.Observable;
+import rx.Scheduler;
+import rx.functions.Action1;
+import rx.functions.Func0;
 
 public class ContactsActivityPresenter {
 
@@ -35,8 +35,12 @@ public class ContactsActivityPresenter {
     MinezyApiV1 mMinezyApiV1;
 
     @Inject
-    @Named("thread per run")
-    TaskChainFactory mTaskChainFactory;
+    @Named("main")
+    Scheduler mMainScheduler;
+
+    @Inject
+    @Named("io")
+    Scheduler mThreadScheduler;
 
     @Inject
     @Named("default")
@@ -65,22 +69,23 @@ public class ContactsActivityPresenter {
 
     public void onCreate(ContactsActivityController controller) {
         mController = controller;
-        mTaskChainFactory.create()
-            .param(getEmailForUserAccount())
-            .background(new Parametrized<String, List<Contact>>() {
+
+        Observable.
+            defer(new Func0<Observable<List<Contact>>>() {
                 @Override
-                public List<Contact> perform(String left) throws Exception {
+                public Observable<List<Contact>> call() {
                     try {
-                        return mMinezyApiV1.getContacts(left);
+                        return Observable.just(mMinezyApiV1.getContacts(getEmailForUserAccount()));
                     } catch (MinezyApiV1.MinezyApiException | MinezyConnection.MinezyConnectionException e) {
-                        getLogger(getClass().getName()).log(Level.SEVERE, "Error retrieving contacts:", e);
-                        return INVALID_CONTACTS_LIST;
+                        return Observable.just(INVALID_CONTACTS_LIST);
                     }
                 }
             })
-            .main(new Parametrized<List<Contact>, Void>() {
+            .subscribeOn(mThreadScheduler)
+            .observeOn(mMainScheduler)
+            .subscribe(new Action1<List<Contact>>() {
                 @Override
-                public Void perform(List<Contact> contacts) throws Exception {
+                public void call(List<Contact> contacts) {
                     mContacts = contacts;
                     if (contacts.size() > 0) {
                         mController.setContacts(contacts);
@@ -96,10 +101,8 @@ public class ContactsActivityPresenter {
                             webViewTask.run();
                         }
                     }
-                    return null;
                 }
-            })
-            .execute();
+            });
     }
 
     public void onDestroy() {
