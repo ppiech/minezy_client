@@ -8,10 +8,6 @@ import org.minezy.android.data.MinezyConnection;
 import org.minezy.android.ui.ContactsActivityPresenter;
 import org.minezy.android.ui.EmailsActivityPresenter;
 import org.minezy.android.utils.ImmediateTestScheduler;
-import org.minezy.android.utils.TaskChainFactory;
-import org.minezy.android.utils.TestExecutor;
-
-import java.util.concurrent.Executor;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -29,9 +25,6 @@ public class TestModule {
     public SharedPreferences sharedPreferences;
     public MinezyApiV1 apiV1;
     public MinezyConnection connection;
-    public Executor mainExecutor = new TestExecutor();
-    public Executor backgroundExecutor = new TestExecutor();
-    public TaskChainFactory taskChainFactory = new TaskChainFactory(mainExecutor, backgroundExecutor);
     public Scheduler mainScheduler = new ImmediateTestScheduler();
     public Scheduler ioScheduler = new ImmediateTestScheduler();
 
@@ -56,26 +49,6 @@ public class TestModule {
     @Provides
     MinezyConnection provideMinezyConnection() {
         return connection;
-    }
-
-    @Provides
-    @Named("thread per run")
-    TaskChainFactory provideTaskChainFactory(@Named("main") Executor main,
-                                             @Named("thread per run") Executor background) {
-        return taskChainFactory;
-    }
-
-    @Provides
-    @Singleton
-    @Named("main")
-    Executor provideMainExecutor() {
-        return mainExecutor;
-    }
-
-    @Provides
-    @Named("thread per run")
-    Executor provideThreadPerRunExecutor() {
-        return backgroundExecutor;
     }
 
     @Provides

@@ -9,7 +9,6 @@ import org.minezy.android.TestModule
 import org.minezy.android.data.MinezyApiV1
 import org.minezy.android.model.Contact
 import org.minezy.android.utils.ImmediateTestScheduler
-import org.minezy.android.utils.TestExecutor
 import org.robolectric.Robolectric
 import org.skyscreamer.jsonassert.JSONAssert
 import pl.polidea.robospock.RoboSpecification

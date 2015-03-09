@@ -2,11 +2,6 @@ package org.minezy.android.utlis;
 
 import android.test.AndroidTestCase;
 
-import org.minezy.android.utils.ImmediateExecutor;
-import org.minezy.android.utils.Parametrized;
-import org.minezy.android.utils.TaskChain;
-import org.minezy.android.utils.TaskChainFactory;
-
 import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;

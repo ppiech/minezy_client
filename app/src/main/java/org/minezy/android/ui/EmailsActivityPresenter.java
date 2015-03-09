@@ -7,16 +7,18 @@ import org.minezy.android.R;
 import org.minezy.android.data.MinezyApiV1;
 import org.minezy.android.data.MinezyConnection;
 import org.minezy.android.model.Email;
-import org.minezy.android.utils.Parametrized;
-import org.minezy.android.utils.TaskChainFactory;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.Callable;
 import java.util.logging.Level;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+
+import rx.Observable;
+import rx.Scheduler;
+import rx.functions.Action1;
+import rx.functions.Func0;
 
 import static java.util.logging.Logger.getLogger;
 
@@ -25,8 +27,12 @@ public class EmailsActivityPresenter {
         Arrays.asList(new Email[]{});
 
     @Inject
-    @Named("thread per run")
-    TaskChainFactory mTaskChainFactory;
+    @Named("main")
+    Scheduler mMainScheduler;
+
+    @Inject
+    @Named("io")
+    Scheduler mThreadScheduler;
 
     @Inject
     MinezyApiV1 mMinezyApiV1;
@@ -59,28 +65,29 @@ public class EmailsActivityPresenter {
         mController = controller;
         mIntent = intent;
         if (mIntent != null) {
-            mTaskChainFactory.create()
-                .background(new Callable<List<Email>>() {
+            Observable.
+                defer(new Func0<Observable<List<Email>>>() {
                     @Override
-                    public List<Email> call() throws Exception {
+                    public Observable<List<Email>> call() {
                         try {
-                            return mMinezyApiV1.getEmails(getContactForUserAccount(),
-                                getToContactEmail());
+                            return Observable.just(mMinezyApiV1.getEmails(getContactForUserAccount(),
+                                getToContactEmail()));
                         } catch (MinezyApiV1.MinezyApiException | MinezyConnection.MinezyConnectionException e) {
                             getLogger(getClass().getName()).log(Level.SEVERE, "Error retrieving emails:", e);
-                            return INVALID_EMAILS_LIST;
+                            return Observable.just(INVALID_EMAILS_LIST);
                         }
                     }
                 })
-                .main(new Parametrized<List<Email>, Void>() {
+                .subscribeOn(mThreadScheduler)
+                .observeOn(mMainScheduler)
+                .subscribe(new Action1<List<Email>>() {
                     @Override
-                    public Void perform(List<Email> result) throws Exception {
+                    public void call(List<Email> result) {
                         if (result.size() > 0) {
                             mController.setEmails(result);
                         }
-                        return null;
                     }
-                }).execute();
+                });
         }
     }
 

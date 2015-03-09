@@ -7,7 +7,7 @@ import org.minezy.android.TestModule
 import org.minezy.android.data.MinezyApiV1
 import org.minezy.android.model.Contact
 import org.minezy.android.model.Email
-import org.minezy.android.utils.TestExecutor
+import org.minezy.android.utils.ImmediateTestScheduler
 import org.robolectric.Robolectric
 import pl.polidea.robospock.RoboSpecification
 
@@ -45,7 +45,7 @@ class EmailsActivitySpecification extends RoboSpecification {
         presenter.onCreate(controller, intent)
 
         then:
-        1 * module.apiV1.getEmails("pete.davis@enron.com", "jeff.dasovich@enron.com")
+        1 * module.apiV1.getEmails("pete.davis@enron.com", "jeff.dasovich@enron.com") >> emails
     }
 
     def "onCreate() retrieves emails on background thread"() {
@@ -53,7 +53,7 @@ class EmailsActivitySpecification extends RoboSpecification {
         presenter.onCreate(controller, intent)
 
         then:
-        1 * module.apiV1.getEmails({ TestExecutor.executing() == module.backgroundExecutor }, _)
+        1 * module.apiV1.getEmails({ ImmediateTestScheduler.sCurrent == module.ioScheduler }, _) >> emails
     }
 
 
@@ -70,7 +70,9 @@ class EmailsActivitySpecification extends RoboSpecification {
         presenter.onCreate(controller, intent)
 
         then:
-        1 * controller.setEmails({ TestExecutor.executing() == module.mainExecutor });
+        1 * controller.setEmails({ ImmediateTestScheduler.sCurrent == module.mainScheduler });
+
+
     }
 
 }
