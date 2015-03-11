@@ -11,4 +11,5 @@ public interface ContactsActivityController extends ActivityController {
 
     public void setWebviewData(JSONObject json);
 
+    public void setActiveContact(Contact contact);
 }

@@ -23,6 +23,13 @@ function displayGraph(graph) {
       .links(graph.links)
       .start();
 
+  force
+      .nodes()
+      .forEach(function(o, i) {
+        o.px = o.x = width/2;
+        o.py = o.y = height/2;
+      });
+
   var link = svg.selectAll(".link")
       .data(graph.links)
     .enter().append("line")
@@ -55,6 +62,33 @@ function clearGraph() {
     svg.selectAll("*").remove()
 }
 
+function unhighlight_all() {
+    svg.selectAll(".node")
+        .style("fill", function(d) {
+            return color(1);
+        });
+    force.charge(function(node) {
+        return -30;
+    });
+}
+
+function highlight(name, group) {
+
+    svg.selectAll(".node")
+        .filter( function(d) {
+            return d.name == name
+        })
+        .style("fill", function(d) {
+            return color(group);
+        });
+
+    force.charge(function(node) {
+        if (node.name === name)  return -300;
+        return -30;
+    });
+    force.start();
+}
+
 var width = 400,
     height = 400;
 
@@ -71,7 +105,46 @@ var svg = d3.select("body").append("svg")
 
 var graph = JSON.parse('{ "nodes":[ {"name":"Myriel","group":1}, {"name":"Napoleon","group":1}, {"name":"Mlle.Baptistine","group":1}], "links":[ {"source":1,"target":0,"value":1},  {"source":2,"target":0,"value":8},  {"source":2,"target":1,"value":10} ]}')
 
-displayGraph(graph)
+displayGraph(graph, width, height)
+
+highlight("Myriel", 2)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

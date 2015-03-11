@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -15,7 +14,6 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ArrayAdapter;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.minezy.android.MinezyApplication;
 import org.minezy.android.R;
@@ -46,22 +44,6 @@ public class ContactsActivity extends ActionBarActivity implements ContactsActiv
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        try {
-            JSONObject jsonObject = new JSONObject("{" +
-                                                   "  \"nodes\":[" +
-                                                   "    {\"name\":\"Myriel\",\"group\":1}," +
-                                                   "    {\"name\":\"Napoleon\",\"group\":1}," +
-                                                   "    {\"name\":\"Mlle.Baptistine\",\"group\":1}]," +
-                                                   "\"links\":[" +
-                                                   "    {\"source\":1,\"target\":0,\"value\":1}," +
-                                                   "    {\"source\":2,\"target\":0,\"value\":8}," +
-                                                   "    {\"source\":2,\"target\":1,\"value\":10}]" +
-                                                   "}");
-            Log.e("Minezy", jsonObject.toString());
-        } catch (JSONException e) {
-            Log.e("Minezy", "json", e);
-        }
 
         setContentView(R.layout.contacts_activity);
         mCotactsAdapter = new ContactAdapter(this);
@@ -146,6 +128,10 @@ public class ContactsActivity extends ActionBarActivity implements ContactsActiv
             "'); clearGraph(); displayGraph(graph)");
     }
 
+    public void setActiveContact(Contact contact) {
+        mWebView.loadUrl(
+            "javascript: unhighlight_all(); highlight('" + contact.getName() + "', 2);");
+    }
 
     @Override
     protected void onDestroy() {

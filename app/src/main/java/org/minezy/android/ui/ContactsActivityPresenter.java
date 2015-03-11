@@ -103,6 +103,7 @@ public class ContactsActivityPresenter {
                     }
                 }
             });
+
     }
 
     public void onDestroy() {
@@ -127,7 +128,7 @@ public class ContactsActivityPresenter {
         Runnable webViewTask = new Runnable() {
             @Override
             public void run() {
-                mController.setWebviewData(makeGraphDataForContacts(mContacts, item.getContact()));
+                mController.setActiveContact(item.getContact());
             }
         };
         if (mWebViewLoading) {
