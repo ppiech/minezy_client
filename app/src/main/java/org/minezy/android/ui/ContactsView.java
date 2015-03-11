@@ -5,7 +5,7 @@ import org.minezy.android.model.Contact;
 
 import java.util.List;
 
-public interface ContactsActivityController extends ActivityController {
+public interface ContactsView extends ActivityController {
 
     public void setContacts(List<Contact> contacts);
 

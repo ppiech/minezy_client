@@ -8,13 +8,13 @@ import android.widget.TextView;
 import org.minezy.android.R;
 import org.minezy.android.model.Email;
 
-public class EmailsItemController {
+public class EmailsItemView {
 
     private final View mItemView;
     private final Email mEmail;
     private final int mPosition;
 
-    public EmailsItemController(View itemView, Email email, int position) {
+    public EmailsItemView(View itemView, Email email, int position) {
         mItemView = itemView;
         mEmail = email;
         mPosition = position;

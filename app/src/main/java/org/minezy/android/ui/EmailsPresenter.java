@@ -22,7 +22,7 @@ import rx.functions.Func0;
 
 import static java.util.logging.Logger.getLogger;
 
-public class EmailsActivityPresenter {
+public class EmailsPresenter {
     private static final List<Email> INVALID_EMAILS_LIST =
         Arrays.asList(new Email[]{});
 
@@ -41,10 +41,10 @@ public class EmailsActivityPresenter {
     @Named("default")
     SharedPreferences mSharedPreferences;
 
-    private EmailsActivityController mController;
+    private EmailsView mController;
     private Intent mIntent;
 
-    public EmailsActivityPresenter() {
+    public EmailsPresenter() {
     }
 
     private String getString(int resId) {
@@ -61,7 +61,7 @@ public class EmailsActivityPresenter {
         return mIntent.getStringExtra(EmailsActivity.ARG_CONTACT);
     }
 
-    public void onCreate(EmailsActivityController controller, Intent intent) {
+    public void onCreate(EmailsView controller, Intent intent) {
         mController = controller;
         mIntent = intent;
         if (mIntent != null) {
@@ -95,7 +95,7 @@ public class EmailsActivityPresenter {
 
     }
 
-    public void onEmailsItemUpdate(EmailsItemController item) {
+    public void onEmailsItemUpdate(EmailsItemView item) {
         item.setName(item.getEmail().getSubject());
     }
 }

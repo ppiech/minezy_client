@@ -13,7 +13,7 @@ import org.robolectric.Robolectric
 import org.skyscreamer.jsonassert.JSONAssert
 import pl.polidea.robospock.RoboSpecification
 
-class ContactsActivitySpecification extends RoboSpecification {
+class ContactsPresenterSpec extends RoboSpecification {
 
     final List<Contact> contacts = [
             new Contact("pete.davis@enron.com", "Pete Davis"),
@@ -37,8 +37,8 @@ class ContactsActivitySpecification extends RoboSpecification {
             """));
 
     def module = new TestModule()
-    def controller = Mock(ContactsActivityController)
-    def presenter = new ContactsActivityPresenter()
+    def view = Mock(ContactsView)
+    def presenter = new ContactsPresenter()
 
     def setup() {
         module.context = Robolectric.application
@@ -46,7 +46,7 @@ class ContactsActivitySpecification extends RoboSpecification {
         module.sharedPreferences = Mock(SharedPreferences)
 
         module.sharedPreferences.getString('account_email', _) >> "pete.davis@enron.com"
-        controller.getContext() >> module.context
+        view.getContext() >> module.context
         module.apiV1.getContacts('pete.davis@enron.com') >> contacts
 
         ObjectGraph.create(module).inject(presenter)
@@ -63,7 +63,7 @@ class ContactsActivitySpecification extends RoboSpecification {
 
     def "onCreate() retrieves contacts from apiV1 on background thread"() {
         when:
-        presenter.onCreate(controller)
+        presenter.onCreate(view)
 
         then:
         1 * module.apiV1.getContacts({
@@ -74,44 +74,44 @@ class ContactsActivitySpecification extends RoboSpecification {
 
     def "onCreate() should set contacts to view controller"() {
         when:
-        presenter.onCreate(controller)
+        presenter.onCreate(view)
 
         then:
-        1 * controller.setContacts(contacts);
+        1 * view.setContacts(contacts);
     }
 
     def "onCreate() calls view controller on main thread"() {
         when:
-        presenter.onCreate(controller)
+        presenter.onCreate(view)
 
         then:
-        1 * controller.setContacts({
+        1 * view.setContacts({
             ImmediateTestScheduler.sCurrent == module.mainScheduler
         });
     }
 
     def "onCreate() sets contacts' graph data to view controller"() {
         when:
-        presenter.onCreate(controller)
+        presenter.onCreate(view)
 
         then:
-        1 * controller.setWebviewData(_);
+        1 * view.setWebviewData(_);
     }
 
     def "onCreate() sets contacts' graph data to view controller that is valid json"() {
         when:
-        presenter.onCreate(controller)
+        presenter.onCreate(view)
 
         then:
-        1 * controller.setWebviewData({ data -> new JSONObject(data) });
+        1 * view.setWebviewData({ data -> new JSONObject(data) });
     }
 
     def "onCreate() sets contacts' graph data to view controller that matches expected json"() {
         when:
-        presenter.onCreate(controller)
+        presenter.onCreate(view)
 
         then:
-        1 * controller.setWebviewData({ data ->
+        1 * view.setWebviewData({ data ->
             JSONAssert.assertEquals(contactsGraphJson, data, false)
             true
         })

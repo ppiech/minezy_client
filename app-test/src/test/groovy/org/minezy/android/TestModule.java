@@ -5,8 +5,8 @@ import android.content.SharedPreferences;
 
 import org.minezy.android.data.MinezyApiV1;
 import org.minezy.android.data.MinezyConnection;
-import org.minezy.android.ui.ContactsActivityPresenter;
-import org.minezy.android.ui.EmailsActivityPresenter;
+import org.minezy.android.ui.ContactsPresenter;
+import org.minezy.android.ui.EmailsPresenter;
 import org.minezy.android.utils.ImmediateTestScheduler;
 
 import javax.inject.Named;
@@ -17,7 +17,7 @@ import dagger.Provides;
 import rx.Scheduler;
 
 @Module(
-    injects = {ContactsActivityPresenter.class, EmailsActivityPresenter.class, MinezyApiV1.class},
+    injects = {ContactsPresenter.class, EmailsPresenter.class, MinezyApiV1.class},
     overrides = true,
     library = true)
 public class TestModule {

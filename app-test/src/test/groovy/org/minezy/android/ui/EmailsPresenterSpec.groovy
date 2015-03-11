@@ -11,7 +11,7 @@ import org.minezy.android.utils.ImmediateTestScheduler
 import org.robolectric.Robolectric
 import pl.polidea.robospock.RoboSpecification
 
-class EmailsActivitySpecification extends RoboSpecification {
+class EmailsPresenterSpec extends RoboSpecification {
 
     final List<Contact> emails = [
             new Email("5964974.1075840259917.JavaMail.evans@thyme", new Date("Wed, 13 Sep 2000 14:42:00 -0700 (PDT)"), "Talking points from Dave Walden"),
@@ -20,8 +20,8 @@ class EmailsActivitySpecification extends RoboSpecification {
     ]
 
     def module = new TestModule()
-    def controller = Mock(EmailsActivityController)
-    def presenter = new EmailsActivityPresenter()
+    def view = Mock(EmailsView)
+    def presenter = new EmailsPresenter()
     def intent
 
     def setup() {
@@ -31,18 +31,18 @@ class EmailsActivitySpecification extends RoboSpecification {
 
         module.sharedPreferences.getString('account_email', _) >> "pete.davis@enron.com"
 
-        controller.getContext() >> module.context
+        view.getContext() >> module.context
         module.apiV1.getEmails("pete.davis@enron.com", "jeff.dasovich@enron.com") >> emails
         intent = new Intent(module.context, EmailsActivity.class);
         intent.putExtra("contact", "jeff.dasovich@enron.com");
-        presenter = new EmailsActivityPresenter()
+        presenter = new EmailsPresenter()
 
         ObjectGraph.create(module).inject(presenter)
     }
 
     def "onCreate() retrieves emails for contact from intent extra EmailsActivity.ARG_CONTACT"() {
         when:
-        presenter.onCreate(controller, intent)
+        presenter.onCreate(view, intent)
 
         then:
         1 * module.apiV1.getEmails("pete.davis@enron.com", "jeff.dasovich@enron.com") >> emails
@@ -50,7 +50,7 @@ class EmailsActivitySpecification extends RoboSpecification {
 
     def "onCreate() retrieves emails on background thread"() {
         when:
-        presenter.onCreate(controller, intent)
+        presenter.onCreate(view, intent)
 
         then:
         1 * module.apiV1.getEmails({ ImmediateTestScheduler.sCurrent == module.ioScheduler }, _) >> emails
@@ -59,20 +59,18 @@ class EmailsActivitySpecification extends RoboSpecification {
 
     def "onCreate() should set email to view controller"() {
         when:
-        presenter.onCreate(controller, intent)
+        presenter.onCreate(view, intent)
 
         then:
-        1 * controller.setEmails(emails);
+        1 * view.setEmails(emails);
     }
 
     def "onCreate() calls view controller on main thread"() {
         when:
-        presenter.onCreate(controller, intent)
+        presenter.onCreate(view, intent)
 
         then:
-        1 * controller.setEmails({ ImmediateTestScheduler.sCurrent == module.mainScheduler });
-
-
+        1 * view.setEmails({ ImmediateTestScheduler.sCurrent == module.mainScheduler });
     }
 
 }

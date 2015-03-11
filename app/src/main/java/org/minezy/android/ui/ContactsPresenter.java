@@ -26,7 +26,7 @@ import rx.Scheduler;
 import rx.functions.Action1;
 import rx.functions.Func0;
 
-public class ContactsActivityPresenter {
+public class ContactsPresenter {
 
     private static final List<Contact> INVALID_CONTACTS_LIST =
         Arrays.asList(new Contact[]{new Contact("invalid", "invalid")});
@@ -46,12 +46,12 @@ public class ContactsActivityPresenter {
     @Named("default")
     SharedPreferences mSharedPreferences;
 
-    private ContactsActivityController mController;
+    private ContactsView mController;
     private List<Contact> mContacts;
     private boolean mWebViewLoading;
     private Runnable mOnWebViewLoadedTask;
 
-    public ContactsActivityPresenter() {
+    public ContactsPresenter() {
     }
 
     private String getString(int resId) {
@@ -67,7 +67,7 @@ public class ContactsActivityPresenter {
         return new Contact(getEmailForUserAccount(), getString(R.string.user_display_name));
     }
 
-    public void onCreate(ContactsActivityController controller) {
+    public void onCreate(ContactsView controller) {
         mController = controller;
 
         Observable.
@@ -118,13 +118,13 @@ public class ContactsActivityPresenter {
         return false;
     }
 
-    public void onContactsItemUpdate(ContactsItemController item) {
+    public void onContactsItemUpdate(ContactsItemView item) {
         item.setName(item.getContact().getName());
         item.setImageDrawable(TextDrawable.builder()
             .buildRound(getContactInitials(item.getContact()), ColorGenerator.MATERIAL.getRandomColor()));
     }
 
-    public void onContactsItemSelected(final ContactsItemController item) {
+    public void onContactsItemSelected(final ContactsItemView item) {
         Runnable webViewTask = new Runnable() {
             @Override
             public void run() {
@@ -139,7 +139,7 @@ public class ContactsActivityPresenter {
 
     }
 
-    public void onContactsItemClicked(ContactsItemController item) {
+    public void onContactsItemClicked(ContactsItemView item) {
         Intent intent = new Intent(mController.getContext(), EmailsActivity.class);
         intent.putExtra(EmailsActivity.ARG_CONTACT, item.getContact().getEmail());
         mController.startActivity(intent);

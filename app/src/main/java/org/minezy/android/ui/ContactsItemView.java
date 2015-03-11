@@ -8,13 +8,13 @@ import android.widget.TextView;
 import org.minezy.android.R;
 import org.minezy.android.model.Contact;
 
-public class ContactsItemController {
+public class ContactsItemView {
 
     private final View mItemView;
     private final Contact mContact;
     private final int mPosition;
 
-    public ContactsItemController(View itemView, Contact contact, int position) {
+    public ContactsItemView(View itemView, Contact contact, int position) {
 
         mItemView = itemView;
         mContact = contact;

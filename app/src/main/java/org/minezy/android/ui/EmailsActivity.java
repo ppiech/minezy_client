@@ -15,11 +15,11 @@ import org.minezy.android.model.Email;
 
 import java.util.List;
 
-public class EmailsActivity extends ActionBarActivity implements EmailsActivityController {
+public class EmailsActivity extends ActionBarActivity implements EmailsView {
 
     public static final String ARG_CONTACT = "contact";
 
-    private EmailsActivityPresenter mPresenter;
+    private EmailsPresenter mPresenter;
     private EmailAdapter mAdapter;
 
     @Override
@@ -30,7 +30,7 @@ public class EmailsActivity extends ActionBarActivity implements EmailsActivityC
 
         ((ListView) findViewById(R.id.emailsList)).setAdapter(mAdapter);
 
-        mPresenter = ((MinezyApplication) getApplication()).getObjectGraph().get(EmailsActivityPresenter.class);
+        mPresenter = ((MinezyApplication) getApplication()).getObjectGraph().get(EmailsPresenter.class);
         //mPresenter = new EmailsActivityPresenter(this, getIntent());
         mPresenter.onCreate(this, getIntent());
     }
@@ -76,7 +76,7 @@ public class EmailsActivity extends ActionBarActivity implements EmailsActivityC
             if (null == convertView) {
                 convertView = mInflater.inflate(R.layout.emails_item, parent, false);
             }
-            mPresenter.onEmailsItemUpdate(new EmailsItemController(convertView, getItem(position), position));
+            mPresenter.onEmailsItemUpdate(new EmailsItemView(convertView, getItem(position), position));
             return convertView;
         }
     }

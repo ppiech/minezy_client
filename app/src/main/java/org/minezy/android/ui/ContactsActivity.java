@@ -26,12 +26,12 @@ import it.sephiroth.android.library.widget.AdapterView;
 import it.sephiroth.android.library.widget.HListView;
 
 
-public class ContactsActivity extends ActionBarActivity implements ContactsActivityController {
+public class ContactsActivity extends ActionBarActivity implements ContactsView {
 
     private static final List<Contact> INVALID_CONTACTS_LIST =
         Arrays.asList(new Contact[]{new Contact("<invalid>", "<invalid>")});
 
-    private ContactsActivityPresenter mPresenter;
+    private ContactsPresenter mPresenter;
 
     private ContactAdapter mCotactsAdapter;
     private WebView mWebView;
@@ -52,14 +52,14 @@ public class ContactsActivity extends ActionBarActivity implements ContactsActiv
         getContactListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                mPresenter.onContactsItemClicked(new ContactsItemController(view, mCotactsAdapter.getItem(i), i));
+                mPresenter.onContactsItemClicked(new ContactsItemView(view, mCotactsAdapter.getItem(i), i));
             }
         });
 
         getContactListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                mPresenter.onContactsItemSelected(new ContactsItemController(view, mCotactsAdapter.getItem(i), i));
+                mPresenter.onContactsItemSelected(new ContactsItemView(view, mCotactsAdapter.getItem(i), i));
             }
         });
 
@@ -87,7 +87,7 @@ public class ContactsActivity extends ActionBarActivity implements ContactsActiv
             }
         });
 
-        mPresenter = ((MinezyApplication) getApplication()).getObjectGraph().get(ContactsActivityPresenter.class);
+        mPresenter = ((MinezyApplication) getApplication()).getObjectGraph().get(ContactsPresenter.class);
         mPresenter.onCreate(this);
     }
 
@@ -171,7 +171,7 @@ public class ContactsActivity extends ActionBarActivity implements ContactsActiv
                 convertView = mInflater.inflate(R.layout.contacts_item, parent, false);
             }
 
-            mPresenter.onContactsItemUpdate(new ContactsItemController(convertView, getItem(position), position));
+            mPresenter.onContactsItemUpdate(new ContactsItemView(convertView, getItem(position), position));
             return convertView;
         }
     }

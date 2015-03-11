@@ -4,8 +4,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
-import org.minezy.android.ui.ContactsActivityPresenter;
-import org.minezy.android.ui.EmailsActivityPresenter;
+import org.minezy.android.ui.ContactsPresenter;
+import org.minezy.android.ui.EmailsPresenter;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -18,7 +18,7 @@ import rx.schedulers.Schedulers;
 
 
 @Module(
-    injects = {EmailsActivityPresenter.class, ContactsActivityPresenter.class}
+    injects = {EmailsPresenter.class, ContactsPresenter.class}
 )
 
 public class MinezyModule {
