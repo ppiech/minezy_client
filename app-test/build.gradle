@@ -10,7 +10,6 @@ robospock {
             testCompile 'com.squareup.dagger:dagger-compiler:1.2.+'
             testCompile 'org.skyscreamer:jsonassert:1.2.3'
             testCompile 'io.reactivex:rxandroid:0.24.+'
-
         }
     }
 }

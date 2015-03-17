@@ -1,7 +1,6 @@
 package org.minezy.android.ui;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
@@ -11,19 +10,22 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.ArrayAdapter;
 
 import org.json.JSONObject;
 import org.minezy.android.MinezyApplication;
 import org.minezy.android.R;
 import org.minezy.android.model.Contact;
+import org.minezy.android.rx.WebViewLoadingEvent;
+import org.minezy.android.rx.WebViewObservable;
 
 import java.util.Arrays;
 import java.util.List;
 
 import it.sephiroth.android.library.widget.AdapterView;
 import it.sephiroth.android.library.widget.HListView;
+import rx.Observable;
+import rx.functions.Func1;
 
 
 public class ContactsActivity extends ActionBarActivity implements ContactsView {
@@ -68,27 +70,29 @@ public class ContactsActivity extends ActionBarActivity implements ContactsView 
         settings.setAllowFileAccessFromFileURLs(true);
         settings.setAllowUniversalAccessFromFileURLs(true);
         mWebView.getSettings().setJavaScriptEnabled(true);
+        // Create web view client before loading page to capture the first pageFinished() event.
+        WebViewObservable.pageLoading(mWebView, true).subscribe();
         mWebView.loadUrl("file:///android_asset/graph.html");
-        mWebView.setWebViewClient(new WebViewClient() {
-            @Override
-            public void onPageStarted(WebView view, String url, Bitmap favicon) {
-                super.onPageStarted(view, url, favicon);
-                if (mPresenter != null) {
-                    mPresenter.onWebViewPageStarted(url);
-                }
-            }
-
-            @Override
-            public void onPageFinished(WebView view, String url) {
-                super.onPageFinished(view, url);
-                if (mPresenter != null) {
-                    mPresenter.onWebViewPageFinished(url);
-                }
-            }
-        });
-
         mPresenter = ((MinezyApplication) getApplication()).getObjectGraph().get(ContactsPresenter.class);
         mPresenter.onCreate(this);
+    }
+
+    @Override
+    public Observable<Void> getWebViewFinished() {
+        return WebViewObservable
+            .pageLoading(mWebView, true)
+            .filter(new Func1<WebViewLoadingEvent, Boolean>() {
+                @Override
+                public Boolean call(WebViewLoadingEvent webViewLoadingEvent) {
+                    return webViewLoadingEvent.type() == WebViewLoadingEvent.Type.FINISHED;
+                }
+            })
+            .map(new Func1<WebViewLoadingEvent, Void>() {
+                @Override
+                public Void call(WebViewLoadingEvent webViewLoadingEvent) {
+                    return null;
+                }
+            });
     }
 
     @Override

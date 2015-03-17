@@ -5,6 +5,8 @@ import org.minezy.android.model.Contact;
 
 import java.util.List;
 
+import rx.Observable;
+
 public interface ContactsView extends ActivityController {
 
     public void setContacts(List<Contact> contacts);
@@ -12,4 +14,6 @@ public interface ContactsView extends ActivityController {
     public void setWebviewData(JSONObject json);
 
     public void setActiveContact(Contact contact);
+
+    public Observable<Void> getWebViewFinished();
 }

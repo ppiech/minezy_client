@@ -47,9 +47,6 @@ public class ContactsPresenter {
     SharedPreferences mSharedPreferences;
 
     private ContactsView mController;
-    private List<Contact> mContacts;
-    private boolean mWebViewLoading;
-    private Runnable mOnWebViewLoadedTask;
 
     public ContactsPresenter() {
     }
@@ -85,25 +82,18 @@ public class ContactsPresenter {
             .observeOn(mMainScheduler)
             .subscribe(new Action1<List<Contact>>() {
                 @Override
-                public void call(List<Contact> contacts) {
-                    mContacts = contacts;
+                public void call(final List<Contact> contacts) {
                     if (contacts.size() > 0) {
-                        mController.setContacts(contacts);
-                        Runnable webViewTask = new Runnable() {
+                        mController.getWebViewFinished().subscribe(new Action1<Void>() {
                             @Override
-                            public void run() {
-                                mController.setWebviewData(makeGraphDataForContacts(mContacts, null));
+                            public void call(Void aVoid) {
+                                mController.setContacts(contacts);
+                                mController.setWebviewData(makeGraphDataForContacts(contacts, null));
                             }
-                        };
-                        if (mWebViewLoading) {
-                            mOnWebViewLoadedTask = webViewTask;
-                        } else {
-                            webViewTask.run();
-                        }
+                        });
                     }
                 }
             });
-
     }
 
     public void onDestroy() {
@@ -125,36 +115,18 @@ public class ContactsPresenter {
     }
 
     public void onContactsItemSelected(final ContactsItemView item) {
-        Runnable webViewTask = new Runnable() {
+        mController.getWebViewFinished().subscribe(new Action1<Void>() {
             @Override
-            public void run() {
+            public void call(Void aVoid) {
                 mController.setActiveContact(item.getContact());
             }
-        };
-        if (mWebViewLoading) {
-            mOnWebViewLoadedTask = webViewTask;
-        } else {
-            webViewTask.run();
-        }
-
+        });
     }
 
     public void onContactsItemClicked(ContactsItemView item) {
         Intent intent = new Intent(mController.getContext(), EmailsActivity.class);
         intent.putExtra(EmailsActivity.ARG_CONTACT, item.getContact().getEmail());
         mController.startActivity(intent);
-    }
-
-    public void onWebViewPageStarted(String url) {
-        mWebViewLoading = true;
-    }
-
-    public void onWebViewPageFinished(String url) {
-        mWebViewLoading = false;
-        if (mOnWebViewLoadedTask != null) {
-            mOnWebViewLoadedTask.run();
-            mOnWebViewLoadedTask = null;
-        }
     }
 
     private String getContactInitials(Contact contact) {
