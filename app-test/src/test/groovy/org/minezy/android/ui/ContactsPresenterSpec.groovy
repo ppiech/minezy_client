@@ -12,6 +12,11 @@ import org.minezy.android.utils.ImmediateTestScheduler
 import org.robolectric.Robolectric
 import org.skyscreamer.jsonassert.JSONAssert
 import pl.polidea.robospock.RoboSpecification
+import rx.Observable;
+import rx.Scheduler;
+import rx.functions.Action1;
+import rx.functions.Func0;
+
 
 class ContactsPresenterSpec extends RoboSpecification {
 
@@ -38,7 +43,8 @@ class ContactsPresenterSpec extends RoboSpecification {
 
     def module = new TestModule()
     def view = Mock(ContactsView)
-    def presenter = new ContactsPresenter()
+    def ContactsPresenter presenter = new ContactsPresenter()
+    def Observable webViewFinished = Observable.just(null);
 
     def setup() {
         module.context = Robolectric.application
@@ -46,8 +52,9 @@ class ContactsPresenterSpec extends RoboSpecification {
         module.sharedPreferences = Mock(SharedPreferences)
 
         module.sharedPreferences.getString('account_email', _) >> "pete.davis@enron.com"
-        view.getContext() >> module.context
         module.apiV1.getContacts('pete.davis@enron.com') >> contacts
+        view.getContext() >> module.context
+        view.getWebViewFinished() >> webViewFinished
 
         ObjectGraph.create(module).inject(presenter)
     }
@@ -116,4 +123,15 @@ class ContactsPresenterSpec extends RoboSpecification {
             true
         })
     }
+
+    def "onCreate() doesn't set contacts' graph when web view is not ready"() {
+        when:
+        webViewFinished = Observable.never();
+
+        presenter.onCreate(view)
+
+        then:
+        1 * view.setWebviewData(_);
+    }
+
 }
